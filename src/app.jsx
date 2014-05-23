@@ -85,8 +85,8 @@ var makeATag = function(name, href) {
 
 var citations = function(converter) {
   return  [
-    { 
-      type: 'output', 
+    {
+      type: 'output',
       filter: function(source) {
         var matches = Citation.find(source)['citations'];
 
@@ -96,7 +96,7 @@ var citations = function(converter) {
           return source;
         }
 
-        for (var i=0,len=matches.length; i<len; i++) { 
+        for (var i=0,len=matches.length; i<len; i++) {
           var match = matches[i].match;
           source = source.replace(match, makeATag(match, makeUrl(matches[i])));
         }
@@ -106,7 +106,7 @@ var citations = function(converter) {
     }
   ];
 };
-window.Showdown.extensions.citations = citations; 
+window.Showdown.extensions.citations = citations;
 var converter = new Showdown.converter({ extensions: ['citations'] });
 var MarkdownEditor = React.createClass({
 
@@ -140,7 +140,7 @@ var MarkdownEditor = React.createClass({
     );
   }
 });
-    
+
 React.renderComponent(
   <Container><YAMLBox /></Container>,
   document.getElementById('content')
