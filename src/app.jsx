@@ -134,7 +134,7 @@ var MarkdownEditor = React.createClass({
             dangerouslySetInnerHTML={{
               __html: mustached
             }}
-            />
+          < /div>
         </div>
       </div>
     );

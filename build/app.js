@@ -5,7 +5,7 @@ var Container = React.createClass({displayName: 'Container',
     return (
       React.DOM.div( {className:"container"},
         React.DOM.div( {className:"row clearfix"},
-        	React.DOM.h2(null, "Legal Markdown Editor"),
+        	React.DOM.h1(null, "Legal Markdown Editor"),
           React.DOM.hr(null, " "),
           this.props.children
         )
@@ -128,10 +128,10 @@ var MarkdownEditor = React.createClass({displayName: 'MarkdownEditor',
             ref:"textarea",
             defaultValue:this.state.value} )
         ),
-        React.DOM.div( {className:"col-md-6 column"},
+        React.DOM.div( {className:"col-md-6 column "},
           React.DOM.h3(null, "Output"),
           React.DOM.div(
-            {className:"content",
+            {className:"content outbox",
             dangerouslySetInnerHTML:{
               __html: mustached
             }}
