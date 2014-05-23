@@ -128,7 +128,7 @@ var MarkdownEditor = React.createClass({
             defaultValue={this.state.value} />
         </div>
         <div className="col-md-6 column">
-          <h3>Output</h3>
+          <h3>Output</h3>\n\n
           <div
             className="content"
             dangerouslySetInnerHTML={{

@@ -16,7 +16,7 @@ var Container = React.createClass({displayName: 'Container',
 
 var YAMLBox = React.createClass({displayName: 'YAMLBox',
 getInitialState: function() {
-    return {data: 'name: test this.  If you delete the words test this and replace with a citation here it will become a link in the input below.  Type 28 USC 1331 and see what happens'};
+    return {data: 'name: test this'};
   },
   handleChange: function() {
     this.setState({data: this.refs.textarea.getDOMNode().value});
@@ -25,7 +25,7 @@ getInitialState: function() {
 		return (
 			React.DOM.div( {className:"YAMLEditor"},
 				React.DOM.div( {className:"col-md-12 column"},
-					React.DOM.h3(null, "YAML Entry"),
+					React.DOM.h3(null, "YAML Entry | Citation Linker"),
 					React.DOM.textarea( {className:"field span20", id:"textarea", rows:"5", cols:"80",
 			            onChange:this.handleChange,
             			ref:"textarea",
