@@ -3,9 +3,10 @@
 var Container = React.createClass({displayName: 'Container',
   render: function() {
     return (
-      React.DOM.div( {className:"container"}, 
-        React.DOM.div( {className:"row clearfix"}, 
+      React.DOM.div( {className:"container"},
+        React.DOM.div( {className:"row clearfix"},
         	React.DOM.h1(null, "Legal Markdown Editor"),
+          React.DOM.hr(null, " "),
           this.props.children
         )
       )
@@ -22,10 +23,10 @@ getInitialState: function() {
   },
 	render: function () {
 		return (
-			React.DOM.div( {className:"YAMLEditor"}, 
-				React.DOM.div( {className:"col-md-12 column"}, 
-					React.DOM.h3(null, "YAML Entry"),
-					React.DOM.textarea( {className:"field span20", id:"textarea", rows:"5", cols:"120",
+			React.DOM.div( {className:"YAMLEditor"},
+				React.DOM.div( {className:"col-md-12 column"},
+					React.DOM.h3(null, "YAML Entry | Citation Linker"),
+					React.DOM.textarea( {className:"field span20", id:"textarea", rows:"5", cols:"80",
 			            onChange:this.handleChange,
             			ref:"textarea",
             			defaultValue:this.state.data} )
@@ -85,8 +86,8 @@ var makeATag = function(name, href) {
 
 var citations = function(converter) {
   return  [
-    { 
-      type: 'output', 
+    {
+      type: 'output',
       filter: function(source) {
         var matches = Citation.find(source)['citations'];
 
@@ -96,7 +97,7 @@ var citations = function(converter) {
           return source;
         }
 
-        for (var i=0,len=matches.length; i<len; i++) { 
+        for (var i=0,len=matches.length; i<len; i++) {
           var match = matches[i].match;
           source = source.replace(match, makeATag(match, makeUrl(matches[i])));
         }
@@ -106,12 +107,12 @@ var citations = function(converter) {
     }
   ];
 };
-window.Showdown.extensions.citations = citations; 
+window.Showdown.extensions.citations = citations;
 var converter = new Showdown.converter({ extensions: ['citations'] });
 var MarkdownEditor = React.createClass({displayName: 'MarkdownEditor',
 
   getInitialState: function() {
-    return {value: 'Type some *markdown* here to {{name}}! Legal citations become links.\n\nSee, e.g., 35 USC 112 and D.C. Official Code 2-531.'};
+    return {value: 'Type some *markdown* here to {{name}}.  Legal citations become links.\n\nSee, e.g., 35 USC 112 and D.C. Official Code 2-531.'};
   },
   handleChange: function() {
     this.setState({value: this.refs.textarea.getDOMNode().value})
@@ -119,18 +120,18 @@ var MarkdownEditor = React.createClass({displayName: 'MarkdownEditor',
   render: function() {
     var mustached = converter.makeHtml(Mustache.to_html(this.state.value, YAML.parse(this.props.data)))
     return (
-      React.DOM.div( {className:"MarkdownEditor"}, 
-        React.DOM.div( {className:"col-md-6 column"}, 
+      React.DOM.div( {className:"MarkdownEditor"},
+        React.DOM.div( {className:"col-lg-6 column"},
           React.DOM.h3(null, "Input"),
           React.DOM.textarea( {className:"field span20", id:"textarea", rows:"25", cols:"60",
             onChange:this.handleChange,
             ref:"textarea",
             defaultValue:this.state.value} )
         ),
-        React.DOM.div( {className:"col-md-6 column"}, 
+        React.DOM.div( {className:"col-md-6 column "},
           React.DOM.h3(null, "Output"),
           React.DOM.div(
-            {className:"content",
+            {className:"content outbox",
             dangerouslySetInnerHTML:{
               __html: mustached
             }}
@@ -140,7 +141,7 @@ var MarkdownEditor = React.createClass({displayName: 'MarkdownEditor',
     );
   }
 });
-    
+
 React.renderComponent(
   Container(null, YAMLBox(null )),
   document.getElementById('content')

@@ -1,0 +1,17 @@
+
+  .outbox{
+    background-color: white;
+    padding:75px;
+    border: 1px solid black;
+  }
+.bodystyle{
+  padding: 75px;
+  background-color: #F8F8FF;
+}
+.about{
+  border:1px solid black;
+  height:250px;
+  padding-top:20px;
+  background-color:white;
+  overflow:auto;
+}
