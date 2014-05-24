@@ -6,6 +6,7 @@ var Container = React.createClass({
       <div className="container">
         <div className="row clearfix">
         	<h1>Legal Markdown Editor</h1>
+          <hr />
           {this.props.children}
         </div>
       </div>
@@ -24,8 +25,8 @@ getInitialState: function() {
 		return (
 			<div className="YAMLEditor">
 				<div className="col-md-12 column">
-					<h3>YAML Entry</h3>
-					<textarea className="field span20" id="textarea" rows="5" cols="120"
+					<h3>YAML Entry | Citation Linker</h3>
+					<textarea className="field span20" id="textarea" rows="5" cols="80"
 			            onChange={this.handleChange}
             			ref="textarea"
             			defaultValue={this.state.data} />
@@ -111,7 +112,7 @@ var converter = new Showdown.converter({ extensions: ['citations'] });
 var MarkdownEditor = React.createClass({
 
   getInitialState: function() {
-    return {value: 'Type some *markdown* here to {{name}}! Legal citations become links.\n\nSee, e.g., 35 USC 112 and D.C. Official Code 2-531.'};
+    return {value: 'Type some *markdown* here to {{name}}.  Legal citations become links.\n\nSee, e.g., 35 USC 112 and D.C. Official Code 2-531.'};
   },
   handleChange: function() {
     this.setState({value: this.refs.textarea.getDOMNode().value})
@@ -120,7 +121,7 @@ var MarkdownEditor = React.createClass({
     var mustached = converter.makeHtml(Mustache.to_html(this.state.value, YAML.parse(this.props.data)))
     return (
       <div className="MarkdownEditor">
-        <div className="col-md-6 column">
+        <div className="col-lg-6 column">
           <h3>Input</h3>
           <textarea className="field span20" id="textarea" rows="25" cols="60"
             onChange={this.handleChange}
@@ -128,13 +129,13 @@ var MarkdownEditor = React.createClass({
             defaultValue={this.state.value} />
         </div>
         <div className="col-md-6 column">
-          <h3>Output</h3>\n\n
+          <h3>Output</h3>
           <div
-            className="content"
+            className="content outbox"
             dangerouslySetInnerHTML={{
               __html: mustached
             }}
-          < /div>
+          />
         </div>
       </div>
     );

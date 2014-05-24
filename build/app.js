@@ -3,10 +3,10 @@
 var Container = React.createClass({displayName: 'Container',
   render: function() {
     return (
-      React.DOM.div( {className:"container"},
-        React.DOM.div( {className:"row clearfix"},
+      React.DOM.div( {className:"container"}, 
+        React.DOM.div( {className:"row clearfix"}, 
         	React.DOM.h1(null, "Legal Markdown Editor"),
-          React.DOM.hr(null, " "),
+          React.DOM.hr(null ),
           this.props.children
         )
       )
@@ -23,8 +23,8 @@ getInitialState: function() {
   },
 	render: function () {
 		return (
-			React.DOM.div( {className:"YAMLEditor"},
-				React.DOM.div( {className:"col-md-12 column"},
+			React.DOM.div( {className:"YAMLEditor"}, 
+				React.DOM.div( {className:"col-md-12 column"}, 
 					React.DOM.h3(null, "YAML Entry | Citation Linker"),
 					React.DOM.textarea( {className:"field span20", id:"textarea", rows:"5", cols:"80",
 			            onChange:this.handleChange,
@@ -120,22 +120,22 @@ var MarkdownEditor = React.createClass({displayName: 'MarkdownEditor',
   render: function() {
     var mustached = converter.makeHtml(Mustache.to_html(this.state.value, YAML.parse(this.props.data)))
     return (
-      React.DOM.div( {className:"MarkdownEditor"},
-        React.DOM.div( {className:"col-lg-6 column"},
+      React.DOM.div( {className:"MarkdownEditor"}, 
+        React.DOM.div( {className:"col-lg-6 column"}, 
           React.DOM.h3(null, "Input"),
           React.DOM.textarea( {className:"field span20", id:"textarea", rows:"25", cols:"60",
             onChange:this.handleChange,
             ref:"textarea",
             defaultValue:this.state.value} )
         ),
-        React.DOM.div( {className:"col-md-6 column "},
+        React.DOM.div( {className:"col-md-6 column"}, 
           React.DOM.h3(null, "Output"),
           React.DOM.div(
             {className:"content outbox",
             dangerouslySetInnerHTML:{
               __html: mustached
             }}
-            )
+          )
         )
       )
     );
