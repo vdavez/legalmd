@@ -112,7 +112,7 @@ var converter = new Showdown.converter({ extensions: ['citations'] });
 var MarkdownEditor = React.createClass({displayName: 'MarkdownEditor',
 
   getInitialState: function() {
-    return {value: 'Type some *markdown* here to {{name}}.  Legal citations become links.\n\nSee, e.g., 35 USC 112 and D.C. Official Code 2-531.'};
+    return {value: 'Type some *markdown* here to {{name}}.  Legal citations become links.\n\nSee, e.g., 35 USC 112 and D.C. Official Code 2-531.\n\n1. I\'m using CSS to create nested lists\n    1. It\'s not the most elegant solution\n    1. But it works\n1. So, woohoo!'};
   },
   handleChange: function() {
     this.setState({value: this.refs.textarea.getDOMNode().value})

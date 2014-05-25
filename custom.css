@@ -1,7 +1,7 @@
 
   .outbox{
     background-color: white;
-    padding:75px;
+    padding:50px;
     border: 1px solid black;
   }
 .bodystyle{
@@ -15,3 +15,6 @@
   background-color:white;
   overflow:auto;
 }
+
+ol { list-style-type: none; counter-reset: say; } 
+ol li:before { counter-increment: say; content: counters(say,".") ". "; }
