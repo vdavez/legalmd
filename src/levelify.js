@@ -1,5 +1,7 @@
 var _ = require('underscore');
 
+// TODO:
+// [] Add customized headings  
 module.exports = function Leveler(str) {
 	return {
 		out: level(str)
@@ -14,6 +16,7 @@ function level (str) {
 		out[i] = m.replace(/^(l+)\./, function() {
 			counter = countIt(arguments[1], counter)
 			return counter.join(".")
+// TODO		return headingFor(counter)
 		})
 	})
 	return out.join('\n\n');
@@ -40,11 +43,11 @@ function countIt (match, counter) {
 	}
 }
 
-function headingFor(match, counter) {
+function headingFor(match) {
   if (match.length == 1)
-    return "Article " + counter + ".";
+    return "Article " + match + ".";
   else if (match.length == 2)
-    return "Section " + counter.join(".");
+    return "Section " + match.join(".");
   else if (match.length >= 3)
     return counter.join(".");
 }
