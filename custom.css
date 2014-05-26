@@ -11,9 +11,18 @@
 .about{
   border:1px solid black;
   height:250px;
-  padding-top:20px;
+  padding:20px;
   background-color:white;
   overflow:auto;
+}
+
+.yaml_box{
+  width:450px;
+  height:225px;
+  content-editable:true;
+  background-color: white;
+  color:black;
+ border:1px solid black;
 }
 
 ol { list-style-type: none; counter-reset: say; } 
