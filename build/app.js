@@ -118,7 +118,7 @@ var MarkdownEditor = React.createClass({displayName: 'MarkdownEditor',
     this.setState({value: this.refs.textarea.getDOMNode().value})
   },
   render: function() {
-    var mustached = converter.makeHtml(Mustache.to_html(this.state.value, YAML.parse(this.props.data)))
+    var mustached = converter.makeHtml(leveler(Mustache.to_html(this.state.value, YAML.parse(this.props.data))).out)
     return (
       React.DOM.div( {className:"MarkdownEditor"}, 
         React.DOM.div( {className:"col-lg-6 column"}, 
@@ -128,15 +128,18 @@ var MarkdownEditor = React.createClass({displayName: 'MarkdownEditor',
             ref:"textarea",
             defaultValue:this.state.value} )
         ),
+
         React.DOM.div( {className:"col-md-6 column"}, 
+        React.DOM.form(null, 
+        React.DOM.div( {className:"form-group"}, 
           React.DOM.h3(null, "Output"),
           React.DOM.div(
             {className:"content outbox",
             dangerouslySetInnerHTML:{
               __html: mustached
             }}
-          )
-        )
+          ),
+        React.DOM.a( {id:"btnExport", download:"output.html", className:"button btn center-block"}, "Download to File"))))
       )
     );
   }
