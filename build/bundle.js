@@ -1346,20 +1346,22 @@
 },{}],2:[function(_dereq_,module,exports){
 var _ = _dereq_('underscore');
 
-module.exports = function Leveler(str) {
+module.exports = function Leveler(str, type) {
 	return {
-		out: level(str)
+//		out: level(str, [{"form":"Sec. $x.","num":"1"}, {"form":"\t($x)","num":"a"}, {"form":"\t\t($x)","num":"1"}])
+		out: level(str, type)
 	};
 }
 
-function level (str) {
+function level (str, type) {
 	var out = [];
 	var arr = str.split("\n")
 	counter = [0]
 	_.each(arr, function (m, i, array) {
 		out[i] = m.replace(/^(l+)\./, function() {
 			counter = countIt(arguments[1], counter)
-			return counter.join(".")
+//			return counter.join(".")
+			return headingFor(counter, type)
 		})
 	})
 	return out.join('\n\n');
@@ -1386,14 +1388,14 @@ function countIt (match, counter) {
 	}
 }
 
-function headingFor(match, counter) {
-  if (match.length == 1)
-    return "Article " + counter + ".";
-  else if (match.length == 2)
-    return "Section " + counter.join(".");
-  else if (match.length >= 3)
-    return counter.join(".");
+function headingFor(counter, type) {
+  //iterate over each level
+  var l = counter.length - 1
+  if (type[l] == undefined) return counter[l]
+  else return type[l].form.replace("$x", testChar(type[l].num,counter[l]))
 }
+
+function testChar(a,b){var c=a.toString().charCodeAt(0);return 65==c?indexToChar(b,!0):97==c?indexToChar(b,!1):73==c?romanize(b):105==c?romanize(b).toLowerCase():b}function indexToChar(a,b){return b?String.fromCharCode(a+64):String.fromCharCode(a+96)}function romanize(a){if(!+a)return!1;for(var b=String(+a).split(""),c=["","C","CC","CCC","CD","D","DC","DCC","DCCC","CM","","X","XX","XXX","XL","L","LX","LXX","LXXX","XC","","I","II","III","IV","V","VI","VII","VIII","IX"],d="",e=3;e--;)d=(c[+b.pop()+10*e]||"")+d;return Array(+b.join("")+1).join("M")+d}
 },{"underscore":1}]},{},[2])
 (2)
 });

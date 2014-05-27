@@ -16,7 +16,8 @@ var Container = React.createClass({displayName: 'Container',
 
 var YAMLBox = React.createClass({displayName: 'YAMLBox',
 getInitialState: function() {
-    return {data: 'name: test this'};
+    return {data: 'name: test this\nlevels: \n  - form: $x.\n    num: I\n  - form: $x.\n    num: A\n  - form: ($x)\n    num: 1'};
+    //{"form":"Sec. $x.","num":"1"}, {"form":"\t($x)","num":"a"}, {"form":"\t\t($x)","num":"1"}]
   },
   handleChange: function() {
     this.setState({data: this.refs.textarea.getDOMNode().value});
@@ -118,7 +119,8 @@ var MarkdownEditor = React.createClass({displayName: 'MarkdownEditor',
     this.setState({value: this.refs.textarea.getDOMNode().value})
   },
   render: function() {
-    var mustached = converter.makeHtml(leveler(Mustache.to_html(this.state.value, YAML.parse(this.props.data))).out)
+    var yml = YAML.parse(this.props.data)
+    var mustached = converter.makeHtml(leveler(Mustache.to_html(this.state.value, yml), yml.levels).out)
     return (
       React.DOM.div( {className:"MarkdownEditor"}, 
         React.DOM.div( {className:"col-lg-6 column"}, 
