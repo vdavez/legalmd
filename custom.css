@@ -3,6 +3,15 @@
     background-color: white;
     padding:50px;
     border: 1px solid black;
+    box-shadow: 10px 10px 5px #888888;
+  }
+
+.inbox{
+    width:450px;
+    background-color: white;
+    padding:10px;
+    border: 1px solid black;
+   
   }
 .bodystyle{
   padding: 75px;
@@ -10,19 +19,23 @@
 }
 .about{
   border:1px solid black;
-  height:250px;
+  height:450px;
   padding:20px;
   background-color:white;
   overflow:auto;
+   box-shadow: 10px 10px 5px #888888;
 }
 
 .yaml_box{
   width:450px;
   height:225px;
-  content-editable:true;
   background-color: white;
   color:black;
- border:1px solid black;
+  border:1px solid black;
+  box-shadow: 10px 10px 5px #888888;
+  padding: 10px;
+
+
 }
 
 ol { list-style-type: none; counter-reset: say; } 
