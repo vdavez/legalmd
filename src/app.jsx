@@ -26,7 +26,7 @@ getInitialState: function() {
 			<div className="YAMLEditor">
 				<div className="col-md-12 column">
 					<h3>YAML Entry | Citation Linker</h3>
-					<textarea className="field span20" id="textarea" rows="5" cols="80"
+					<textarea className="yaml_box" id="textarea"
 			            onChange={this.handleChange}
             			ref="textarea"
             			defaultValue={this.state.data} />
@@ -112,7 +112,7 @@ var converter = new Showdown.converter({ extensions: ['citations'] });
 var MarkdownEditor = React.createClass({
 
   getInitialState: function() {
-    return {value: 'Type some *markdown* here to {{name}}.  Legal citations become links.\n\nSee, e.g., 35 USC 112 and D.C. Official Code 2-531.\n\nl. Make nested lists\nll. It\'s easy to do\nll. Just add a lowercase `l`\nlll. Or many\nlll. Let your imagination run wild.\nl. So, woohoo!'};
+    return {value: 'Type some *markdown* here to {{name}}.  Legal citations become links.\n\nSee, e.g., 35 USC 112 and D.C. Official Code 2-531.\n\nl. Make nested lists\nll. It\'s easy to do\nll. Just add a lowercase `l` and a period `.`\nlll. Or many\nlll. Let your imagination run wild.\nl. So, woohoo!'};
   },
   handleChange: function() {
     this.setState({value: this.refs.textarea.getDOMNode().value})
@@ -139,7 +139,7 @@ var MarkdownEditor = React.createClass({
               __html: mustached
             }}
           />
-        <a id="btnExport" download="output.html" className="button btn center-block">Download to File</a></div></form></div>
+        <a id="btnExport" download="output.html" className="button btn center-block btn-success btn-lg">Download to File</a></div></form></div>
       </div>
     );
   }

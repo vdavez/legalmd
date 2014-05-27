@@ -26,8 +26,6 @@ getInitialState: function() {
 			React.DOM.div( {className:"YAMLEditor"}, 
 				React.DOM.div( {className:"col-md-12 column"}, 
 					React.DOM.h3(null, "YAML Entry | Citation Linker"),
-/* 'yaml_box' css class sets textarea to 320 px width instead of using rows, 
- so fits on smaller screen */
 					React.DOM.textarea( {className:"yaml_box", id:"textarea",
 			            onChange:this.handleChange,
             			ref:"textarea",
@@ -114,7 +112,7 @@ var converter = new Showdown.converter({ extensions: ['citations'] });
 var MarkdownEditor = React.createClass({displayName: 'MarkdownEditor',
 
   getInitialState: function() {
-    return {value: 'Type some *markdown* here to {{name}}.  Legal citations become links.\n\nSee, e.g., 35 USC 112 and D.C. Official Code 2-531.\n\nl. Make nested lists\nll. It\'s easy to do\nll. Just add a lowercase `l`\nlll. Or many\nlll. Let your imagination run wild.\nl. So, woohoo!'};
+    return {value: 'Type some *markdown* here to {{name}}.  Legal citations become links.\n\nSee, e.g., 35 USC 112 and D.C. Official Code 2-531.\n\nl. Make nested lists\nll. It\'s easy to do\nll. Just add a lowercase `l` and a period `.`\nlll. Or many\nlll. Let your imagination run wild.\nl. So, woohoo!'};
   },
   handleChange: function() {
     this.setState({value: this.refs.textarea.getDOMNode().value})
