@@ -26,7 +26,9 @@ getInitialState: function() {
 			React.DOM.div( {className:"YAMLEditor"}, 
 				React.DOM.div( {className:"col-md-12 column"}, 
 					React.DOM.h3(null, "YAML Entry | Citation Linker"),
-					React.DOM.textarea( {className:"field span20", id:"textarea", rows:"5", cols:"80",
+/* 'yaml_box' css class sets textarea to 320 px width instead of using rows, 
+ so fits on smaller screen */
+					React.DOM.textarea( {className:"yaml_box", id:"textarea",
 			            onChange:this.handleChange,
             			ref:"textarea",
             			defaultValue:this.state.data} )
@@ -139,7 +141,7 @@ var MarkdownEditor = React.createClass({displayName: 'MarkdownEditor',
               __html: mustached
             }}
           ),
-        React.DOM.a( {id:"btnExport", download:"output.html", className:"button btn center-block"}, "Download to File"))))
+        React.DOM.a( {id:"btnExport", download:"output.html", className:"button btn center-block btn-success btn-lg"}, "Download to File"))))
       )
     );
   }
