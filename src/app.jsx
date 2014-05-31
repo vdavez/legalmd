@@ -14,26 +14,123 @@ var Container = React.createClass({
   }
 });
 
+var YAMLFrame = React.createClass({
+  getInitialState: function () {
+    return {custom: "Testing", config: "Hello?"}
+  },
+  handleUpload: function (uploadedText) {
+    return false
+    //ToDo: This is going to change the state associated with an upload
+  },
+  render: function () {
+    return (
+      <div className="row">
+        <CustomBox data={this.state.custom} onUpload={this.handleUpload}/>
+        <ConfigBox data={this.state.config} onUpload={this.handleUpload}/>
+      </div>
+    )
+  }
+})
+
+var CustomBox = React.createClass({
+  getUploadText: function () {
+    return false
+  },
+  render: function () {
+    return (
+      <div className="col-lg-6">
+        <h3>YAML Entry | Citation Linker</h3>
+          <textarea className="custom_box" id="yaml_editor" ref="custom_yaml" defaultValue={this.props.data}/>
+          <UploadButton name="custom_upload" onUpload={this.getUploadText} />
+      </div>
+    )
+  }
+})
+
+var ConfigBox = React.createClass({
+  render: function () {
+    return (
+      <div className="col-lg-6">
+        <h3>YAML Entry | Citation Linker</h3>
+          <textarea className="config_box" id="config_box" ref="config_yaml" defaultValue={this.props.data}/>
+          <UploadButton name="config_upload"/>
+      </div>
+    )
+  }
+})
+
+var MarkdownFrame = React.createClass({
+  render: function () {
+    return (
+      <div className="row">
+        <Inbox />
+        <Outbox />
+      </div>
+    )
+  }
+})
+
+var Inbox = React.createClass({
+  render: function () {
+    return (
+      <div className="col-lg-6 column">
+          <h3>Input</h3>
+          <textarea data-persist="garlic" className="inbox" id="inbox" ref="textarea_inbox" />
+          <UploadButton name="inbox_upload"/>
+      </div>    
+    )
+  }
+})
+
+var Outbox = React.createClass({
+  render: function () {
+    return (
+      <div className="col-lg-6 column"> 
+        <h3>Output</h3>
+        <div className="content outbox" id="outbox"/>
+        <DownloadButton />
+      </div>
+    )
+  }
+})
+
+var UploadButton = React.createClass({
+  render: function () {
+    return (
+      <form>
+        <input type="file" id={this.props.name} onUpload/>
+      </form>
+    )
+  }
+})
+
+var DownloadButton = React.createClass({
+  render: function () {
+    return (
+      <a id="btnExport" download="output.html" className="button btn center-block btn-success btn-lg">Download to File</a>
+    )
+  }
+})
+
 var YAMLBox = React.createClass({
 getInitialState: function() {
-    return {data: 'name: test this\nlevels: \n  - form: $x.\n    num: I\n  - form: $x.\n    num: A\n  - form: ($x)\n    num: 1'};
-    //{"form":"Sec. $x.","num":"1"}, {"form":"\t($x)","num":"a"}, {"form":"\t\t($x)","num":"1"}]
+  if (localStorage.yaml == undefined) {
+    return {data: 'name: test this\nlevels: \n  - form: $x.\n    num: I\n  - form: $x.\n    num: A\n  - form: ($x)\n    num: 1'}
+  } else {
+    return {data: localStorage.yaml}
+  }
   },
   handleChange: function() {
-    this.setState({data: this.refs.textarea.getDOMNode().value});
+    this.setState({data: this.refs.textarea_yaml.getDOMNode().value});
   },
 	render: function () {
 		return (
-			<div className="YAMLEditor">
-				<div className="col-md-12 column">
-					<h3>YAML Entry | Citation Linker</h3>
-					<textarea className="yaml_box" id="textarea"
+      <div className="col-lg-6 column">
+			 <h3>YAML Entry | Citation Linker</h3>
+					<textarea className="yaml_box" id="yaml_editor"
 			            onChange={this.handleChange}
-            			ref="textarea"
+            			ref="textarea_yaml"
             			defaultValue={this.state.data} />
-
-				</div>
-        <MarkdownEditor data={this.state.data} />
 			</div>
 		)
 	}
@@ -113,10 +210,12 @@ var converter = new Showdown.converter({ extensions: ['citations'] });
 var MarkdownEditor = React.createClass({
 
   getInitialState: function() {
-    return {value: 'Type some *markdown* here to {{name}}.  Legal citations become links.\n\nSee, e.g., 35 USC 112 and D.C. Official Code 2-531.\n\nl. Make nested lists\nll. It\'s easy to do\nll. Just add a lowercase `l` and a period `.`\nlll. Or many\nlll. Let your imagination run wild.\nl. So, woohoo!'};
+    if (localStorage.inbox == undefined) {
+      return {value: 'Type some *markdown* here to {{name}}.  Legal citations become links.\n\nSee, e.g., 35 USC 112 and D.C. Official Code 2-531.\n\nl. Make nested lists\nll. It\'s easy to do\nll. Just add a lowercase `l` and a period `.`\nlll. Or many\nlll. Let your imagination run wild.\nl. So, woohoo!'};
+    }
   },
   handleChange: function() {
-    this.setState({value: this.refs.textarea.getDOMNode().value})
+    this.setState({value: this.refs.textarea_inbox.getDOMNode().value})
   },
   render: function() {
     var yml = YAML.parse(this.props.data)
@@ -125,9 +224,9 @@ var MarkdownEditor = React.createClass({
       <div className="MarkdownEditor">
         <div className="col-lg-6 column">
           <h3>Input</h3>
-          <textarea className="field span20" id="textarea" rows="25" cols="60"
+          <textarea data-persist="garlic" className="field span20" id="inbox" rows="25" cols="60"
             onChange={this.handleChange}
-            ref="textarea"
+            ref="textarea_inbox"
             defaultValue={this.state.value} />
         </div>
 
@@ -148,6 +247,6 @@ var MarkdownEditor = React.createClass({
 });
 
 React.renderComponent(
-  <Container><YAMLBox /></Container>,
+  <Container><YAMLFrame /><MarkdownFrame /></Container>,
   document.getElementById('content')
 );
