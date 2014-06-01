@@ -1,5 +1,6 @@
 <html>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <head>
 
     <title>Legal Markdown</title>
@@ -8,51 +9,50 @@
     <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/mustache.js/0.7.2/mustache.min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/garlic.js/1.2.2/garlic.min.js"></script>
-  	<link href="bootstrap.min.css" rel="stylesheet">
-    <link href="custom.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/custom.css" rel="stylesheet">
     <script src="http://cdnjs.cloudflare.com/ajax/libs/showdown/0.3.1/showdown.min.js"></script>
     <script type="text/javascript" src="build/yaml.js"></script>
     <script type="text/javascript" src="build/citation.js"></script>
     <script type="text/javascript" src="build/bundle.js"></script>
     <script type="text/javascript" src="build/FileSaver.js"></script>
-  </head>
-<a href="https://github.com/vzvenyach/legalmd"><img style="position: absolute; top: 0; right: 0; border: 0;"
-  src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
-<div class ="container row" style="padding-left:25px">
-  <p><a href="#about">About</a></p>
-</div>
+</head>
 
-<body class="container row bodystyle">
-    <div id="content" class="padding-left:50px; padding-bottom:50px"></div>
+<body class="bodystyle">
+    <div id="content"></div>
+    <a href="https://github.com/vzvenyach/legalmd">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="img/forkme.png" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">
+    </a>
     <script src="build/app.js"></script>
-  </div>
-  <br>
-
-    <div class="container row lg-12-col about" id="about" >
-      <h2 style="text-align:center">LegalMarkdownJS</h2>
-      <div style="padding:10px">
-     <hr>
-      <h3>About</h3>
-      <p>Inspired by the ruby gem built by @compleatang, I wanted to build a javascript port of Legal Markdown.</p>
-      </p>Check out the demo at <a href='http://code.esq.io/legalmd' target="_blank">http://code.esq.io/legalmd</a>.</p>
-      <h3>Contributing</h3>
-      <p>To help make development easy and the user-experience seamless, I am using reactjs to develop the application. It has a slight learning curve, but once you get the hang of it, it's pretty sweet.</p>
-      <h3>License</h3>
-      <p>MIT</p>
     </div>
+    <br>
+    <div class="row lg-12-col about" id="about">
+        <h2 style="text-align:center">LegalMarkdownJS</h2>
+        <div style="padding:10px">
+            <hr>
+            <h3>About</h3>
+            <p>Inspired by the ruby gem built by @compleatang, I wanted to build a javascript port of Legal Markdown.</p>
+            </p>Check out the demo at <a href='http://code.esq.io/legalmd' target="_blank">http://code.esq.io/legalmd</a>.</p>
+            <h3>Contributing</h3>
+            <p>To help make development easy and the user-experience seamless, I am using reactjs to develop the application. It has a slight learning curve, but once you get the hang of it, it's pretty sweet.</p>
+            <h3>License</h3>
+            <p>MIT</p>
+        </div>
     </div>
 
-<script type="text/javascript">
-  $("#btnExport ").on('click', function (event) {
-    downloadHTML();
-  });
+    <script type="text/javascript">
+    $("#btnExport ").on('click', function(event) {
+        downloadHTML();
+    });
 
-  function downloadHTML () {
-    var blob = new Blob([$(".outbox").html()], {type: "text/html;charset=utf-8"});
-    saveAs(blob, "output.html");
-  };
-
-</script>
+    function downloadHTML() {
+        var blob = new Blob([$(".outbox").html()], {
+            type: "text/html;charset=utf-8"
+        });
+        saveAs(blob, "output.html");
+    };
+    </script>
 
 </body>
+
 </html>
