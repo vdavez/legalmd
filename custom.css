@@ -1,13 +1,16 @@
-
-  .outbox{
+.outbox{
     background-color: white;
     padding:50px;
     border: 1px solid black;
+    font-family: "Fairplay", Georgia, "Times New Roman", Times, serif;
+    font-size: 18px;
   }
+
 .bodystyle{
   padding: 75px;
   background-color: #F8F8FF;
 }
+
 .about{
   border:1px solid black;
   height:250px;
@@ -25,5 +28,10 @@
  border:1px solid black;
 }
 
-ol { list-style-type: none; counter-reset: say; } 
-ol li:before { counter-increment: say; content: counters(say,".") ". "; }
+.inbox{
+  width:450px;
+  height:225px;
+  background-color: white;
+  padding:10px;
+  border: 1px solid black;   
+}
