@@ -1355,16 +1355,25 @@ module.exports = function Leveler(str, type) {
 
 function level (str, type) {
 	var out = [];
+	var xrefer = []
 	var arr = str.split("\n")
 	counter = [0]
 	_.each(arr, function (m, i, array) {
-		out[i] = m.replace(/^(l+)\./, function() {
+		out[i] = m.replace(/^(l+)\.(\s\|(\w|\_|\-)+\|)?/, function() {
 			counter = countIt(arguments[1], counter)
-//			return counter.join(".")
-			return headingFor(counter, type)
+			var head = headingFor(counter, type)
+			// Check for cross-references
+			if (arguments[2] != undefined) {
+				xrefer.push({"xref":arguments[2].trim(), "index": i, "head":head.trim()})
+			}
+			return head
 		})
 	})
-	return out.join('\n\n');
+	var returnStr = out.join('\n\n')
+	_.each(xrefer, function (m, i, xlist) {
+		returnStr = returnStr.replace(m.xref, m.head)
+	})
+	return returnStr;
 }
 
 function countIt (match, counter) {
