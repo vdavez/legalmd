@@ -116,6 +116,8 @@ var Inbox = React.createClass({displayName: 'Inbox',
 
 var Outbox = React.createClass({displayName: 'Outbox',
   saveGist: function () {
+    var yml = $.extend(YAML.parse(this.props.data.custom),YAML.parse(this.props.data.config))
+    var mustached = converter.makeHtml(leveler(Mustache.to_html(this.props.inbox.inbox, yml), yml.levels).out)
     var gist = {
       description: "legalmd-gist",
       public: true,
@@ -128,6 +130,9 @@ var Outbox = React.createClass({displayName: 'Outbox',
         },
         "inbox.md": {
             "content": this.props.inbox.inbox
+        },
+        "output.html": {
+            "content": mustached
         }
       }
     };
