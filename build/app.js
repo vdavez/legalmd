@@ -115,15 +115,68 @@ var Inbox = React.createClass({displayName: 'Inbox',
 })
 
 var Outbox = React.createClass({displayName: 'Outbox',
+  saveGist: function () {
+    var gist = {
+      description: "legalmd-gist",
+      public: true,
+      files: {
+        "config.yaml": {
+            "content": this.props.data.config
+        },
+        "custom.yaml": {
+            "content": this.props.data.custom
+        },
+        "inbox.md": {
+            "content": this.props.inbox.inbox
+        }
+      }
+    };
+
+    // TODO: show spinner/msg while this happens
+
+    console.log("Saving to an anonymous gist...");
+    $.post(
+      'https://api.github.com/gists',
+      JSON.stringify(gist)
+    ).done(function(data, status, xhr) {
+
+      // take new Gist id, make permalink
+      if (history && history.pushState)
+      history.pushState({id: data.id}, null, "#" + data.id);
+      console.log(data.id)
+
+      // mark what we last saved
+
+      console.log("Remaining this hour: " + xhr.getResponseHeader("X-RateLimit-Remaining"));
+
+    }).fail(function(xhr, status, errorThrown) {
+      console.log(xhr);
+      // TODO: gracefully handle rate limit errors
+      // if (status == 403)
+
+      // TODO: show when saving will be available
+      // e.g. "try again in 5 minutes"
+      // var reset = xhr.getResponseHeader("X-RateLimit-Reset");
+      // var date = new Date();
+      // date.setTime(parseInt(reset) * 1000);
+      // use http://momentjs.com/ to say "in _ minutes"
+
+    });
+
+    return false;
+
+  },
   render: function () {
-    console.log(this.props.inbox.inbox)
     var yml = $.extend(YAML.parse(this.props.data.custom),YAML.parse(this.props.data.config))
     var mustached = converter.makeHtml(leveler(Mustache.to_html(this.props.inbox.inbox, yml), yml.levels).out)
     return (
       React.DOM.div( {className:"col-lg-6 column"},  
         React.DOM.h3(null, "Output"),
         React.DOM.div( {className:"content outbox", dangerouslySetInnerHTML:{__html: mustached}}),
-        DownloadButton(null )
+        React.DOM.div( {className:"form-group"}, 
+        DownloadButton(null ),
+        React.DOM.button( {className:"button center-block btn btn-primary btn-lg", onClick:this.saveGist}, "Save to Gist")
+        )
       )
     )
   }
@@ -149,7 +202,7 @@ var UploadButton = React.createClass({displayName: 'UploadButton',
 var DownloadButton = React.createClass({displayName: 'DownloadButton',
   render: function () {
     return (
-      React.DOM.a( {id:"btnExport", download:"output.html", className:"button btn center-block btn-success btn-lg"}, "Download to File")
+      React.DOM.a( {id:"btnExport", download:"output.html", className:"button center-block btn btn-success btn-lg"}, "Download to File")
     )
   }
 })
