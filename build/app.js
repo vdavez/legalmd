@@ -116,8 +116,9 @@ var Inbox = React.createClass({displayName: 'Inbox',
 
 var Outbox = React.createClass({displayName: 'Outbox',
   render: function () {
+    console.log(this.props.inbox.inbox)
     var yml = $.extend(YAML.parse(this.props.data.custom),YAML.parse(this.props.data.config))
-    var mustached = converter.makeHtml(leveler(Mustache.to_html(this.props.inbox.inbox, yml), yml.levels).out)
+    var mustached = converter.makeHtml(Mustache.to_html(leveler(this.props.inbox.inbox, yml.levels).out, yml))
     return (
       React.DOM.div( {className:"col-lg-6 column"},  
         React.DOM.h3(null, "Output"),

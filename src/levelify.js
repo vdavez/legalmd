@@ -17,7 +17,7 @@ function level (str, type) {
 			counter = countIt(arguments[1], counter)
 			var head = headingFor(counter, type)
 			// Check for cross-references
-			if (arguments[2] != undefined) {
+			if (arguments[2] != undefined && arguments[2] != "") {
 				xrefer.push({"xref":arguments[2].trim(), "index": i, "head":head.trim()})
 			}
 			return head
@@ -27,6 +27,7 @@ function level (str, type) {
 	_.each(xrefer, function (m, i, xlist) {
 		returnStr = returnStr.replace(m.xref, m.head)
 	})
+
 	return returnStr;
 }
 
