@@ -138,14 +138,14 @@ var Outbox = React.createClass({
       description: "legalmd-gist",
       public: true,
       files: {
+        "inbox.md": {
+            "content": this.props.inbox.inbox
+        },
         "config.yaml": {
             "content": this.props.data.config
         },
         "custom.yaml": {
             "content": this.props.data.custom
-        },
-        "inbox.md": {
-            "content": this.props.inbox.inbox
         },
         "output.html": {
             "content": mustached
@@ -175,14 +175,14 @@ var Outbox = React.createClass({
       description: "legalmd-gist",
       public: true,
       files: {
+        "inbox.md": {
+            "content": this.props.inbox.inbox
+        },
         "config.yaml": {
             "content": this.props.data.config
         },
         "custom.yaml": {
             "content": this.props.data.custom
-        },
-        "inbox.md": {
-            "content": this.props.inbox.inbox
         },
         "output.html": {
             "content": mustached
@@ -201,6 +201,28 @@ var Outbox = React.createClass({
             url: gist_url,
             contentType: "application/json",
             data: JSON.stringify(gist),
+            }).fail(function (xhr, status, errorThrown) {
+
+              result.post({
+                url:gist_url + '/forks',
+                data: JSON.stringify(gist),
+              }).done(function(data, status, xhr) {
+        // take new Gist id, make permalink
+              if (history && history.pushState)
+                history.pushState({id: data.id}, null, "#" + data.id);
+                console.log(data.id)
+                // mark what we last saved
+                console.log("Remaining this hour: " + xhr.getResponseHeader("X-RateLimit-Remaining"));
+              }).fail(function(xhr, status, errorThrown) {
+            console.log(xhr);
+            })
+
+                      result.patch({
+            url: gist_url,
+            contentType: "application/json",
+            data: JSON.stringify(gist),
+            })
+
             })
         })
     }
