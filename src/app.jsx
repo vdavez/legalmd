@@ -131,6 +131,43 @@ var Inbox = React.createClass({
 })
 
 var Outbox = React.createClass({
+    saveAnonGist: function () {
+    var yml = $.extend(YAML.parse(this.props.data.custom),YAML.parse(this.props.data.config))
+    var mustached = converter.makeHtml(leveler(Mustache.to_html(this.props.inbox.inbox, yml), yml.levels).out)
+    var gist = {
+      description: "legalmd-gist",
+      public: true,
+      files: {
+        "config.yaml": {
+            "content": this.props.data.config
+        },
+        "custom.yaml": {
+            "content": this.props.data.custom
+        },
+        "inbox.md": {
+            "content": this.props.inbox.inbox
+        },
+        "output.html": {
+            "content": mustached
+        }
+      }
+    };
+      $.ajax({
+        type: "post",
+        url:'https://api.github.com/gists',
+        data: JSON.stringify(gist),
+      }).done(function(data, status, xhr) {
+        // take new Gist id, make permalink
+        if (history && history.pushState)
+        history.pushState({id: data.id}, null, "#" + data.id);
+        console.log(data.id)
+        // mark what we last saved
+        console.log("Remaining this hour: " + xhr.getResponseHeader("X-RateLimit-Remaining"));
+      }).fail(function(xhr, status, errorThrown) {
+        console.log(xhr);
+        })
+    return false;
+  },
   saveGist: function () {
     var yml = $.extend(YAML.parse(this.props.data.custom),YAML.parse(this.props.data.config))
     var mustached = converter.makeHtml(leveler(Mustache.to_html(this.props.inbox.inbox, yml), yml.levels).out)
@@ -152,52 +189,44 @@ var Outbox = React.createClass({
         }
       }
     };
-/*
+
     if (document.location.hash != "") {
-      console.log("Updating an anonymous gist...")
-      var gist_url = 'https://api.github.com/gists/' + document.location.hash.replace("#","")
-      console.log(gist_url)
-      $.ajax({
-        url: gist_url,
-        async: false,
-        contentType: "application/json",
-        data: JSON.stringify(gist),
-        type: "patch"})
+       OAuth.popup('github', function(err, result) {
+            if (err) {
+                console.log(err); // do something with error
+                return;
+            }
+            var gist_url = 'https://api.github.com/gists/' + document.location.hash.replace("#","")
+          result.patch({
+            url: gist_url,
+            contentType: "application/json",
+            data: JSON.stringify(gist),
+            })
+        })
     }
     else {
-*/
-    // TODO: show spinner/msg while this happens
-      console.log("Saving to an anonymous gist...");
-      $.post(
-        'https://api.github.com/gists',
-        JSON.stringify(gist)
-      ).done(function(data, status, xhr) {
-
+    OAuth.popup('github', function(err, result) {
+            if (err) {
+                console.log(err); // do something with error
+                return;
+            }
+      console.log("Saving to a gist...");
+      result.post({
+        url:'https://api.github.com/gists',
+        data: JSON.stringify(gist),
+      }).done(function(data, status, xhr) {
         // take new Gist id, make permalink
         if (history && history.pushState)
         history.pushState({id: data.id}, null, "#" + data.id);
         console.log(data.id)
-
         // mark what we last saved
-
         console.log("Remaining this hour: " + xhr.getResponseHeader("X-RateLimit-Remaining"));
-
       }).fail(function(xhr, status, errorThrown) {
         console.log(xhr);
-        // TODO: gracefully handle rate limit errors
-        // if (status == 403)
-
-        // TODO: show when saving will be available
-        // e.g. "try again in 5 minutes"
-        // var reset = xhr.getResponseHeader("X-RateLimit-Reset");
-        // var date = new Date();
-        // date.setTime(parseInt(reset) * 1000);
-        // use http://momentjs.com/ to say "in _ minutes"
-
+        })
       });
-//    }
+    }
     return false;
-
   },
   render: function () {
     var yml = $.extend(YAML.parse(this.props.data.custom),YAML.parse(this.props.data.config))
@@ -208,7 +237,8 @@ var Outbox = React.createClass({
         <div className="content outbox" dangerouslySetInnerHTML={{__html: mustached}}/>
         <div className="form-group">
         <DownloadButton />
-        <button className="button center-block btn btn-primary btn-lg" onClick={this.saveGist}>Save to Gist</button>
+        <button className="button btn btn-primary btn-block btn-lg" onClick={this.saveGist}>Save to User Gist</button>
+        <button className="button btn btn-info btn-block btn-lg" onClick={this.saveAnonGist}>Save to Anonymous Gist</button>
         </div>
       </div>
     )
