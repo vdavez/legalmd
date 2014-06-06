@@ -202,7 +202,6 @@ var Outbox = React.createClass({
             contentType: "application/json",
             data: JSON.stringify(gist),
             }).fail(function (xhr, status, errorThrown) {
-
               result.post({
                 url:gist_url + '/forks',
                 data: JSON.stringify(gist),
@@ -216,13 +215,11 @@ var Outbox = React.createClass({
               }).fail(function(xhr, status, errorThrown) {
             console.log(xhr);
             })
-
-                      result.patch({
-            url: gist_url,
-            contentType: "application/json",
-            data: JSON.stringify(gist),
-            })
-
+            result.patch({
+              url: 'https://api.github.com/gists/' + document.location.hash.replace("#",""),
+              contentType: "application/json",
+              data: JSON.stringify(gist),
+              })
             })
         })
     }
