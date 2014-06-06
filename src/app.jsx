@@ -16,7 +16,23 @@ var Container = React.createClass({
 
 var YAMLFrame = React.createClass({
   getInitialState: function () {
-    return {custom: "name: Legal Markdown", config: "levels: \n  - form: $x.\n    num: I\n  - form: $x.\n    num: A\n  - form: ($x)\n    num: 1"}
+    contents = []
+    if (document.location.hash != "") {
+      $.ajax({
+        async: false,
+        url: 'https://api.github.com/gists/' + document.location.hash.replace("#",""),
+        context: this
+      }).done(function (d) {
+          contents[0] = d.files["custom.yaml"].content
+          contents[1] = d.files["config.yaml"].content
+          contents[2] = d.files["inbox.md"].content;
+      })
+    } else {
+       contents[0] = "name: Legal Markdown\ntest: hello?"
+       contents[1] = "levels: \n  - form: $x.\n    num: I\n  - form: $x.\n    num: A\n  - form: ($x)\n    num: 1"
+       contents[2] = "#{{name}}\n\nType some *markdown* here to try it out. Legal citations become links.\n\nSee, e.g., 35 USC 112 and D.C. Official Code 2-531.\n\nl. |xref| Make nested lists\nll. It's easy to do\nll. Just add a lowercase `l` and a period `.`\nlll. Or many\nlll. You can even use cross references. Try adding a level before |xref|\nlll. Let your imagination run wild.\nl. So, woohoo!"
+    }
+    return {custom: contents[0], config: contents[1], inbox: contents[2]} 
   },
   handleChange: function (uploadedText) {
     (uploadedText.custom != undefined ? this.setState({custom: uploadedText.custom, config:this.state.config}) : this.setState({custom: this.state.custom, config:uploadedText.config}))
@@ -28,7 +44,7 @@ var YAMLFrame = React.createClass({
         <CustomBox data={this.state.custom} onChange={this.handleChange}/>
         <ConfigBox data={this.state.config} onChange={this.handleChange}/>
       </div>
-      <MarkdownFrame data={this.state}/>
+      <MarkdownFrame data={this.state} inbox={this.state.inbox}/>
       </div>
     )
   }
@@ -84,7 +100,7 @@ var MarkdownFrame = React.createClass({
   render: function () {
     return (
       <div className="row">
-        <Inbox data={this.props.data} />
+        <Inbox data={this.props.data} inbox={this.props.inbox} />
       </div>
     )
   }
@@ -92,7 +108,7 @@ var MarkdownFrame = React.createClass({
 
 var Inbox = React.createClass({
   getInitialState: function () {
-    return {inbox: "#{{name}}\n\nType some *markdown* here to try it out. Legal citations become links.\n\nSee, e.g., 35 USC 112 and D.C. Official Code 2-531.\n\nl. |xref| Make nested lists\nll. It\'s easy to do\nll. Just add a lowercase `l` and a period `.`\nlll. Or many\nlll. You can even use cross references. Try adding a level before |xref|\nlll. Let your imagination run wild.\nl. So, woohoo!"}
+    return {inbox: this.props.inbox}
   },
   getUploadText: function (text) {
     this.setState({inbox: text.text})
@@ -136,38 +152,50 @@ var Outbox = React.createClass({
         }
       }
     };
-
+/*
+    if (document.location.hash != "") {
+      console.log("Updating an anonymous gist...")
+      var gist_url = 'https://api.github.com/gists/' + document.location.hash.replace("#","")
+      console.log(gist_url)
+      $.ajax({
+        url: gist_url,
+        async: false,
+        contentType: "application/json",
+        data: JSON.stringify(gist),
+        type: "patch"})
+    }
+    else {
+*/
     // TODO: show spinner/msg while this happens
+      console.log("Saving to an anonymous gist...");
+      $.post(
+        'https://api.github.com/gists',
+        JSON.stringify(gist)
+      ).done(function(data, status, xhr) {
 
-    console.log("Saving to an anonymous gist...");
-    $.post(
-      'https://api.github.com/gists',
-      JSON.stringify(gist)
-    ).done(function(data, status, xhr) {
+        // take new Gist id, make permalink
+        if (history && history.pushState)
+        history.pushState({id: data.id}, null, "#" + data.id);
+        console.log(data.id)
 
-      // take new Gist id, make permalink
-      if (history && history.pushState)
-      history.pushState({id: data.id}, null, "#" + data.id);
-      console.log(data.id)
+        // mark what we last saved
 
-      // mark what we last saved
+        console.log("Remaining this hour: " + xhr.getResponseHeader("X-RateLimit-Remaining"));
 
-      console.log("Remaining this hour: " + xhr.getResponseHeader("X-RateLimit-Remaining"));
+      }).fail(function(xhr, status, errorThrown) {
+        console.log(xhr);
+        // TODO: gracefully handle rate limit errors
+        // if (status == 403)
 
-    }).fail(function(xhr, status, errorThrown) {
-      console.log(xhr);
-      // TODO: gracefully handle rate limit errors
-      // if (status == 403)
+        // TODO: show when saving will be available
+        // e.g. "try again in 5 minutes"
+        // var reset = xhr.getResponseHeader("X-RateLimit-Reset");
+        // var date = new Date();
+        // date.setTime(parseInt(reset) * 1000);
+        // use http://momentjs.com/ to say "in _ minutes"
 
-      // TODO: show when saving will be available
-      // e.g. "try again in 5 minutes"
-      // var reset = xhr.getResponseHeader("X-RateLimit-Reset");
-      // var date = new Date();
-      // date.setTime(parseInt(reset) * 1000);
-      // use http://momentjs.com/ to say "in _ minutes"
-
-    });
-
+      });
+//    }
     return false;
 
   },
