@@ -249,7 +249,7 @@ var Outbox = React.createClass({
   },
   render: function () {
     var yml = $.extend(YAML.parse(this.props.data.custom),YAML.parse(this.props.data.config))
-    var mustached = converter.makeHtml(leveler(Mustache.to_html(this.props.inbox.inbox, yml), yml.levels).out)
+    var mustached = converter.makeHtml(link2bills(leveler(Mustache.to_html(this.props.inbox.inbox, yml), yml.levels).out))
     return (
       <div className="col-lg-6 column"> 
         <h3>Output</h3>
@@ -325,6 +325,28 @@ function makeUrl(citation) {
   // if no match, silently default to the plain text
   return citation.match;
 }
+
+function link2bills(h) {
+  // Regex is "BXX-XXX" or "PRXX-XXX" or "B XX-XXX"
+  var reg = XRegExp('(?<type>(PR|Proposed Resolution)|(B|Bill))(\\s?)(?<period>\\d{1,2})(\\-)(?<number>\\d{1,4})', 'gi');
+  return XRegExp.replace(h, reg, function(d) {
+    // Bill or PR?
+    var url;
+    var t = (d.type[0].toLowerCase() == "b" ? "B" : "PR");
+    // Leading Zeros
+    while (d.number.length < 4) {
+      d.number = "0" + d.number;
+    }
+    //Build the URL
+    var identifer = t + d.period + '-' + d.number;
+
+    //Smartly figure out whether you're in CP 20 (new LIMS) or before then (old LIMS)
+    var url = (d.period > 19 ? 'http://lims.dccouncil.us/Legislation/' + identifer : "http://dcclims1.dccouncil.us/lims/legislation.aspx?LegNo=" + identifer)
+    //Return the Linked URL
+    return makeATag(d, url);
+    }, "all");
+}
+
 
 var makeATag = function(name, href) {
   var open = "<a href='" + href +"'>";
