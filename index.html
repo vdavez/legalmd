@@ -8,7 +8,8 @@
     <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/mustache.js/0.7.2/mustache.min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/garlic.js/1.2.2/garlic.min.js"></script>
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+<!--    <link href="css/bootstrap.min.css" rel="stylesheet"> -->
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
     <link href="css/custom.css" rel="stylesheet">
     <script src="http://cdnjs.cloudflare.com/ajax/libs/showdown/0.3.1/showdown.min.js"></script>
     <script type="text/javascript" src="build/yaml.js"></script>
@@ -16,30 +17,18 @@
     <script type="text/javascript" src="build/bundle.js"></script>
     <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/xregexp/2.0.0/xregexp-min.js"></script>
     <script type="text/javascript" src="build/FileSaver.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="build/oauth.min.js"></script>
 
 </head>
 
 <body class="bodystyle">
-    <div id="content"></div>
     <a href="https://github.com/vzvenyach/legalmd">
-        <img style="position: absolute; top: 0; right: 0; border: 0;" src="img/forkme.png" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">
+        <img style="position: absolute; top: 0; right: 0; border: 0; z-index:9999" src="img/forkme.png" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">
     </a>
+    
+    <div id="content"></div>
     <script src="build/app.js"></script>
-    </div>
-    <br>
-    <div class="row lg-12-col about" id="about">
-        <h2 style="text-align:center">LegalMarkdownJS</h2>
-        <div style="padding:10px">
-            <hr>
-            <h3>About</h3>
-            <p>Inspired by the ruby gem built by @compleatang, I wanted to build a javascript port of Legal Markdown.</p>
-            </p>Check out the demo at <a href='http://code.esq.io/legalmd' target="_blank">http://code.esq.io/legalmd</a>.</p>
-            <h3>Contributing</h3>
-            <p>To help make development easy and the user-experience seamless, I am using reactjs to develop the application. It has a slight learning curve, but once you get the hang of it, it's pretty sweet.</p>
-            <h3>License</h3>
-            <p>MIT</p>
-        </div>
     </div>
 
     <!-- Adding Google Analytics until something else replaces it -->
