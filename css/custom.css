@@ -7,7 +7,7 @@
   }
 
 .bodystyle{
-  padding: 75px;
+  padding: 5px;
   background-color: #F8F8FF;
 }
 
@@ -20,8 +20,8 @@
 }
 
 .yaml_box{
-  width:450px;
-  height:225px;
+  width:500px;
+  height:125px;
   content-editable:true;
   background-color: white;
   color:black;
@@ -29,8 +29,8 @@
 }
 
 .inbox{
-  width:450px;
-  height:225px;
+  width:500px;
+  height:500px;
   background-color: white;
   padding:10px;
   border: 1px solid black;   

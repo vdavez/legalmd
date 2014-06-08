@@ -1,18 +1,74 @@
 /** @jsx React.DOM */
 
 var Container = React.createClass({displayName: 'Container',
+  saveClick: function () {
+    $("#about-modal").modal('show');
+  },
   render: function() {
     return (
+      React.DOM.div(null, 
+      AboutModal(null ),
+      React.DOM.nav( {className:"navbar navbar-default navbar-static-top z-index > 1040", role:"navigation"}, 
+        React.DOM.div( {className:"container"}, 
+          React.DOM.div( {className:"navbar-header"}, 
+            React.DOM.button( {type:"button", className:"navbar-toggle", 'data-toggle':"collapse", 'data-target':"#lmd-navbar"}, 
+              React.DOM.span( {className:"sr-only"}, "Toggle navigation"),
+              React.DOM.span( {className:"icon-bar"}),
+              React.DOM.span( {className:"icon-bar"}),
+              React.DOM.span( {className:"icon-bar"})
+            ),
+            React.DOM.a( {className:"navbar-brand", href:"#"}, "LegalMarkdownJS")
+          ),
+
+          React.DOM.div( {className:"collapse navbar-collapse", id:"lmd-navbar"}, 
+            React.DOM.ul( {className:"nav navbar-nav"}, 
+              React.DOM.li(null, React.DOM.a( {href:"#", onClick:this.saveClick}, "About"))
+            )
+        )
+      ),
       React.DOM.div( {className:"container"}, 
+
         React.DOM.div( {className:"row clearfix"}, 
         	React.DOM.h1(null, "Legal Markdown Editor"),
           React.DOM.hr(null ),
-          this.props.children
+          YAMLFrame( {ref:"myYAML"} )
         )
       )
+
+      )
+    )
     );
   }
 });
+
+var AboutModal = React.createClass({displayName: 'AboutModal',
+  render: function () {
+    return (
+      React.DOM.div( {id:"about-modal", className:"modal fade"}, 
+        React.DOM.div( {className:"modal-dialog"}, 
+          React.DOM.div( {className:"modal-content"}, 
+            React.DOM.div( {className:"modal-header"}, 
+              React.DOM.button( {type:"button", className:"close", 'data-dismiss':"modal", 'aria-hidden':"true"}, "×"),
+              React.DOM.h4( {className:"modal-title"}, "About LegalMarkdownJS")
+            ),
+          React.DOM.div( {className:"modal-body"}, 
+            React.DOM.h3(null, "About"),
+            React.DOM.p(null, "Inspired by the ruby gem built by @compleatang, I wanted to build a javascript port of Legal Markdown."),
+            React.DOM.h3(null, "Contributing"),
+            React.DOM.p(null, "To help make development easy and the user-experience seamless, I am using reactjs to develop the application. It has a slight learning curve, but once you get the hang of it, it is pretty sweet."),
+            React.DOM.h3(null, "License"),
+            React.DOM.p(null, "MIT")
+          ),
+          React.DOM.div( {className:"modal-footer"}, 
+            React.DOM.button( {type:"button", className:"btn btn-default", 'data-dismiss':"modal"}, "Close")
+          )
+        )
+      )
+    )
+    )
+  }
+})
+
 
 var YAMLFrame = React.createClass({displayName: 'YAMLFrame',
   getInitialState: function () {
@@ -41,10 +97,10 @@ var YAMLFrame = React.createClass({displayName: 'YAMLFrame',
     return (
       React.DOM.div(null, 
       React.DOM.div( {className:"row"}, 
-        CustomBox( {data:this.state.custom, onChange:this.handleChange}),
+        CustomBox( {ref:"myCustom", data:this.state.custom, onChange:this.handleChange}),
         ConfigBox( {data:this.state.config, onChange:this.handleChange})
       ),
-      MarkdownFrame( {data:this.state, inbox:this.state.inbox})
+      MarkdownFrame( {ref:"myMDFrame", data:this.state, inbox:this.state.inbox})
       )
     )
   }
@@ -100,7 +156,7 @@ var MarkdownFrame = React.createClass({displayName: 'MarkdownFrame',
   render: function () {
     return (
       React.DOM.div( {className:"row"}, 
-        Inbox( {data:this.props.data, inbox:this.props.inbox} )
+        Inbox( {ref:"myInbox", data:this.props.data, inbox:this.props.inbox} )
       )
     )
   }
@@ -124,7 +180,7 @@ var Inbox = React.createClass({displayName: 'Inbox',
           React.DOM.textarea( {className:"inbox", id:"inbox", ref:"textarea_inbox", value:this.state.inbox, onChange:this.handleChange}),
           UploadButton( {name:"inbox_upload", onUpload:this.getUploadText} )
       ),
-        Outbox( {data:this.props.data, inbox:this.state} )
+        Outbox( {ref:"myOutBox", data:this.props.data, inbox:this.state} )
       )
     )
   }
@@ -264,6 +320,7 @@ var Outbox = React.createClass({displayName: 'Outbox',
   }
 })
 
+
 var UploadButton = React.createClass({displayName: 'UploadButton',
   handleChange: function () {
     var reader = new FileReader();
@@ -379,6 +436,6 @@ window.Showdown.extensions.citations = citations;
 var converter = new Showdown.converter({ extensions: ['citations'] });
 
 React.renderComponent(
-  Container(null, YAMLFrame(null )),
+  Container(null ),
   document.getElementById('content')
 );

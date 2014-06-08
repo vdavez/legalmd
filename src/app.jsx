@@ -1,18 +1,74 @@
 /** @jsx React.DOM */
 
 var Container = React.createClass({
+  saveClick: function () {
+    $("#about-modal").modal('show');
+  },
   render: function() {
     return (
+      <div>
+      <AboutModal />
+      <nav className="navbar navbar-default navbar-static-top z-index > 1040" role="navigation">
+        <div className="container">
+          <div className="navbar-header">
+            <button type="button" className="navbar-toggle" data-toggle="collapse" data-target="#lmd-navbar">
+              <span className="sr-only">Toggle navigation</span>
+              <span className="icon-bar"></span>
+              <span className="icon-bar"></span>
+              <span className="icon-bar"></span>
+            </button>
+            <a className="navbar-brand" href="#">LegalMarkdownJS</a>
+          </div>
+
+          <div className="collapse navbar-collapse" id="lmd-navbar">
+            <ul className="nav navbar-nav">
+              <li><a href="#" onClick={this.saveClick}>About</a></li>
+            </ul>
+        </div>
+      </div>
       <div className="container">
+
         <div className="row clearfix">
         	<h1>Legal Markdown Editor</h1>
           <hr />
-          {this.props.children}
+          <YAMLFrame ref="myYAML" />
         </div>
       </div>
+
+      </nav>
+    </div>
     );
   }
 });
+
+var AboutModal = React.createClass({
+  render: function () {
+    return (
+      <div id="about-modal" className="modal fade">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <button type="button" className="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 className="modal-title">About LegalMarkdownJS</h4>
+            </div>
+          <div className="modal-body">
+            <h3>About</h3>
+            <p>Inspired by the ruby gem built by @compleatang, I wanted to build a javascript port of Legal Markdown.</p>
+            <h3>Contributing</h3>
+            <p>To help make development easy and the user-experience seamless, I am using reactjs to develop the application. It has a slight learning curve, but once you get the hang of it, it is pretty sweet.</p>
+            <h3>License</h3>
+            <p>MIT</p>
+          </div>
+          <div className="modal-footer">
+            <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    )
+  }
+})
+
 
 var YAMLFrame = React.createClass({
   getInitialState: function () {
@@ -41,10 +97,10 @@ var YAMLFrame = React.createClass({
     return (
       <div>
       <div className="row">
-        <CustomBox data={this.state.custom} onChange={this.handleChange}/>
+        <CustomBox ref="myCustom" data={this.state.custom} onChange={this.handleChange}/>
         <ConfigBox data={this.state.config} onChange={this.handleChange}/>
       </div>
-      <MarkdownFrame data={this.state} inbox={this.state.inbox}/>
+      <MarkdownFrame ref="myMDFrame" data={this.state} inbox={this.state.inbox}/>
       </div>
     )
   }
@@ -100,7 +156,7 @@ var MarkdownFrame = React.createClass({
   render: function () {
     return (
       <div className="row">
-        <Inbox data={this.props.data} inbox={this.props.inbox} />
+        <Inbox ref="myInbox" data={this.props.data} inbox={this.props.inbox} />
       </div>
     )
   }
@@ -124,7 +180,7 @@ var Inbox = React.createClass({
           <textarea className="inbox" id="inbox" ref="textarea_inbox" value={this.state.inbox} onChange={this.handleChange}/>
           <UploadButton name="inbox_upload" onUpload={this.getUploadText} />
       </div>
-        <Outbox data={this.props.data} inbox={this.state} />
+        <Outbox ref="myOutBox" data={this.props.data} inbox={this.state} />
       </div>
     )
   }
@@ -264,6 +320,7 @@ var Outbox = React.createClass({
   }
 })
 
+
 var UploadButton = React.createClass({
   handleChange: function () {
     var reader = new FileReader();
@@ -379,6 +436,6 @@ window.Showdown.extensions.citations = citations;
 var converter = new Showdown.converter({ extensions: ['citations'] });
 
 React.renderComponent(
-  <Container><YAMLFrame /></Container>,
+  <Container />,
   document.getElementById('content')
 );
