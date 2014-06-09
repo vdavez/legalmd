@@ -11,23 +11,6 @@
   background-color: #F8F8FF;
 }
 
-.about{
-  border:1px solid black;
-  height:250px;
-  padding:20px;
-  background-color:white;
-  overflow:auto;
-}
-
-.yaml_box{
-  width:500px;
-  height:125px;
-  content-editable:true;
-  background-color: white;
-  color:black;
- border:1px solid black;
-}
-
 .inbox{
   width:500px;
   height:500px;

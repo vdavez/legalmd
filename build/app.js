@@ -1,13 +1,37 @@
 /** @jsx React.DOM */
 
 var Container = React.createClass({displayName: 'Container',
-  saveClick: function () {
-    $("#about-modal").modal('show');
+    getInitialState: function () {
+    contents = []
+    if (document.location.hash != "") {
+      $.ajax({
+        async: false,
+        url: 'https://api.github.com/gists/' + document.location.hash.replace("#",""),
+        context: this
+      }).done(function (d) {
+          contents[0] = d.files["custom.yaml"].content
+          contents[1] = d.files["config.yaml"].content
+          contents[2] = d.files["inbox.md"].content;
+      })
+    } else {
+       contents[0] = "name: Legal Markdown\ntest: hello?"
+       contents[1] = "levels: \n  - form: $x. \n    num: I \n  - form: $x. \n    num: A \n  - form: ($x) \n    num: 1"
+       contents[2] = "#{{name}}\n\nType some *markdown* here to try it out. Legal citations become links.\n\nSee, e.g., 35 USC 112 and D.C. Official Code 2-531.\n\nl. |xref| Make nested lists\nll. It's easy to do\nll. Just add a lowercase `l` and a period `.`\nlll. Or many\nlll. You can even use cross references. Try adding a level before |xref|\nlll. Let your imagination run wild.\nl. So, woohoo!"
+    }
+    return {custom: contents[0], config: contents[1], inbox: contents[2]} 
+  },
+  handleChange: function (uploadedText) {
+    (uploadedText.custom != undefined ? this.setState({custom: uploadedText.custom, config:this.state.config}) : this.setState({custom: this.state.custom, config:uploadedText.config}))
   },
   render: function() {
+    var about_click = (function () {$("#about-modal").modal("show")});
+    var custom_click = (function () {$("#custom").modal("show")});
+    var config_click = (function () {$("#config").modal("show")});
     return (
       React.DOM.div(null, 
       AboutModal(null ),
+      CustomModal( {name:"custom", data:this.state.custom, onChange:this.handleChange}),
+      ConfigModal( {name:"config", data:this.state.config, onChange:this.handleChange}),
       React.DOM.nav( {className:"navbar navbar-default navbar-static-top z-index > 1040", role:"navigation"}, 
         React.DOM.div( {className:"container"}, 
           React.DOM.div( {className:"navbar-header"}, 
@@ -22,7 +46,12 @@ var Container = React.createClass({displayName: 'Container',
 
           React.DOM.div( {className:"collapse navbar-collapse", id:"lmd-navbar"}, 
             React.DOM.ul( {className:"nav navbar-nav"}, 
-              React.DOM.li(null, React.DOM.a( {href:"#", onClick:this.saveClick}, "About"))
+              React.DOM.li(null, React.DOM.a( {onClick:about_click}, "About")),
+              React.DOM.li(null, React.DOM.a( {className:"dropdown-toggle", 'data-toggle':"dropdown"}, "Set YAML",React.DOM.span( {className:"caret"})),
+              React.DOM.ul( {className:"dropdown-menu", role:"menu"}, 
+              React.DOM.li(null, React.DOM.a( {onClick:custom_click}, "Customize")),
+              React.DOM.li(null, React.DOM.a( {onClick:config_click}, "Configure"))              
+              ))
             )
         )
       ),
@@ -31,7 +60,7 @@ var Container = React.createClass({displayName: 'Container',
         React.DOM.div( {className:"row clearfix"}, 
         	React.DOM.h1(null, "Legal Markdown Editor"),
           React.DOM.hr(null ),
-          YAMLFrame( {ref:"myYAML"} )
+          MarkdownFrame( {ref:"myMDFrame", data:this.state, inbox:this.state.inbox})
         )
       )
 
@@ -40,6 +69,80 @@ var Container = React.createClass({displayName: 'Container',
     );
   }
 });
+
+var CustomModal = React.createClass({displayName: 'CustomModal',
+  getInitialState: function () {
+    return {custom: this.props.data}
+  },
+  getUploadText: function (text) {
+    this.setState({custom: text.text})
+    this.props.onChange(this.state)
+  },
+  handleChange: function() {
+    this.setState({custom: this.refs.custom_yaml.getDOMNode().value});
+    this.props.onChange(this.state)
+  },
+  render: function () {
+    return (
+      React.DOM.div( {id:this.props.name, className:"modal fade"}, 
+        React.DOM.div( {className:"modal-dialog"}, 
+          React.DOM.div( {className:"modal-content"}, 
+            React.DOM.div( {className:"modal-header"}, 
+              React.DOM.button( {type:"button", className:"close", 'data-dismiss':"modal", 'aria-hidden':"true"}, "x"),
+              React.DOM.h4( {className:"modal-title"}, "Customize")
+            ),
+          React.DOM.div( {className:"modal-body"}, 
+          React.DOM.form( {role:"form"}, 
+            React.DOM.textarea( {ref:"custom_yaml", value:this.state.custom, rows:"10", className:"form-control", onChange:this.handleChange}),
+            UploadButton( {name:"custom_upload", onUpload:this.getUploadText} )
+          )
+          ),
+          React.DOM.div( {className:"modal-footer"}, 
+            React.DOM.button( {type:"button", className:"btn btn-default", 'data-dismiss':"modal"}, "Close")
+          )
+        )
+      )
+    )
+    )
+  }
+})
+
+var ConfigModal = React.createClass({displayName: 'ConfigModal',
+  getInitialState: function () {
+    return {config: this.props.data}
+  },
+  getUploadText: function (text) {
+    this.setState({config: text.text})
+    this.props.onChange(this.state)
+  },
+  handleChange: function() {
+    this.setState({config: this.refs.yaml_box.getDOMNode().value});
+    this.props.onChange(this.state)
+  },
+  render: function () {
+    return (
+      React.DOM.div( {id:this.props.name, className:"modal fade"}, 
+        React.DOM.div( {className:"modal-dialog"}, 
+          React.DOM.div( {className:"modal-content"}, 
+            React.DOM.div( {className:"modal-header"}, 
+              React.DOM.button( {type:"button", className:"close", 'data-dismiss':"modal", 'aria-hidden':"true"}, "x"),
+              React.DOM.h4( {className:"modal-title"}, "Configure")
+            ),
+          React.DOM.div( {className:"modal-body"}, 
+          React.DOM.form( {role:"form"}, 
+            React.DOM.textarea( {ref:"yaml_box", value:this.state.config, rows:"10", className:"form-control", onChange:this.handleChange}),
+            UploadButton( {name:"config_upload", onUpload:this.getUploadText} )
+          )
+          ),
+          React.DOM.div( {className:"modal-footer"}, 
+            React.DOM.button( {type:"button", className:"btn btn-default", 'data-dismiss':"modal"}, "Close")
+          )
+        )
+      )
+    )
+    )
+  }
+})
 
 var AboutModal = React.createClass({displayName: 'AboutModal',
   render: function () {
@@ -65,89 +168,6 @@ var AboutModal = React.createClass({displayName: 'AboutModal',
         )
       )
     )
-    )
-  }
-})
-
-
-var YAMLFrame = React.createClass({displayName: 'YAMLFrame',
-  getInitialState: function () {
-    contents = []
-    if (document.location.hash != "") {
-      $.ajax({
-        async: false,
-        url: 'https://api.github.com/gists/' + document.location.hash.replace("#",""),
-        context: this
-      }).done(function (d) {
-          contents[0] = d.files["custom.yaml"].content
-          contents[1] = d.files["config.yaml"].content
-          contents[2] = d.files["inbox.md"].content;
-      })
-    } else {
-       contents[0] = "name: Legal Markdown\ntest: hello?"
-       contents[1] = "levels: \n  - form: $x.\n    num: I\n  - form: $x.\n    num: A\n  - form: ($x)\n    num: 1"
-       contents[2] = "#{{name}}\n\nType some *markdown* here to try it out. Legal citations become links.\n\nSee, e.g., 35 USC 112 and D.C. Official Code 2-531.\n\nl. |xref| Make nested lists\nll. It's easy to do\nll. Just add a lowercase `l` and a period `.`\nlll. Or many\nlll. You can even use cross references. Try adding a level before |xref|\nlll. Let your imagination run wild.\nl. So, woohoo!"
-    }
-    return {custom: contents[0], config: contents[1], inbox: contents[2]} 
-  },
-  handleChange: function (uploadedText) {
-    (uploadedText.custom != undefined ? this.setState({custom: uploadedText.custom, config:this.state.config}) : this.setState({custom: this.state.custom, config:uploadedText.config}))
-  },
-  render: function () {
-    return (
-      React.DOM.div(null, 
-      React.DOM.div( {className:"row"}, 
-        CustomBox( {ref:"myCustom", data:this.state.custom, onChange:this.handleChange}),
-        ConfigBox( {data:this.state.config, onChange:this.handleChange})
-      ),
-      MarkdownFrame( {ref:"myMDFrame", data:this.state, inbox:this.state.inbox})
-      )
-    )
-  }
-})
-
-var CustomBox = React.createClass({displayName: 'CustomBox',
-  getInitialState: function () {
-    return {custom: this.props.data}
-  },
-  getUploadText: function (text) {
-    this.setState({custom: text.text})
-    this.props.onChange(this.state)
-  },
-  handleChange: function() {
-    this.setState({custom: this.refs.custom_yaml.getDOMNode().value});
-    this.props.onChange(this.state)
-  },
-  render: function () {
-    return (
-      React.DOM.div( {className:"col-lg-6"}, 
-        React.DOM.h3(null, "Customize"),
-          React.DOM.textarea( {className:"yaml_box", id:"yaml_editor", ref:"custom_yaml", value:this.state.custom, onChange:this.handleChange}),
-          UploadButton( {name:"custom_upload", onUpload:this.getUploadText} )
-      )
-    )
-  }
-})
-
-var ConfigBox = React.createClass({displayName: 'ConfigBox',
-  getInitialState: function () {
-    return {config: this.props.data}
-  },
-  getUploadText: function (text) {
-    this.setState({config: text.text})
-    this.props.onChange(this.state)
-  },
-  handleChange: function() {
-    this.setState({config: this.refs.config_yaml.getDOMNode().value});
-    this.props.onChange(this.state)
-  },
-  render: function () {
-    return (
-      React.DOM.div( {className:"col-lg-6"}, 
-        React.DOM.h3(null, "Configure"),
-          React.DOM.textarea( {className:"yaml_box", id:"config_box", ref:"config_yaml", value:this.state.config, onChange:this.handleChange}),
-          UploadButton( {name:"config_upload", onUpload:this.getUploadText} )
-      )
     )
   }
 })
@@ -311,9 +331,11 @@ var Outbox = React.createClass({displayName: 'Outbox',
         React.DOM.h3(null, "Output"),
         React.DOM.div( {className:"content outbox", dangerouslySetInnerHTML:{__html: mustached}}),
         React.DOM.div( {className:"form-group"}, 
-        DownloadButton(null ),
-        React.DOM.button( {className:"button btn btn-primary btn-block btn-lg", onClick:this.saveGist}, "Save to User Gist"),
-        React.DOM.button( {className:"button btn btn-info btn-block btn-lg", onClick:this.saveAnonGist}, "Save to Anonymous Gist")
+        React.DOM.div( {className:"btn-group center-block"}, 
+          React.DOM.button( {id:"btnExport", download:"output.html", className:"btn btn-success btn-block btn-lg"}, "Download to File"),
+          React.DOM.button( {className:"btn btn-primary btn-block btn-lg", onClick:this.saveGist}, "Save to User Gist"),
+          React.DOM.button( {className:"btn btn-info btn-block btn-lg", onClick:this.saveAnonGist}, "Save to Anonymous Gist")
+        )
         )
       )
     )
@@ -338,13 +360,6 @@ var UploadButton = React.createClass({displayName: 'UploadButton',
   }
 })
 
-var DownloadButton = React.createClass({displayName: 'DownloadButton',
-  render: function () {
-    return (
-      React.DOM.a( {id:"btnExport", download:"output.html", className:"button center-block btn btn-success btn-lg"}, "Download to File")
-    )
-  }
-})
 
 function makeUsCodeUrl(citation) {
   var usc = citation.usc;
