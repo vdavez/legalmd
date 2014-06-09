@@ -50,8 +50,9 @@ var Container = React.createClass({
               <li><a className="dropdown-toggle" data-toggle="dropdown">Set YAML<span className="caret"></span></a>
               <ul className="dropdown-menu" role="menu">
               <li><a onClick={custom_click}>Customize</a></li>
-              <li><a onClick={config_click}>Configure</a></li>              
+              <li><a onClick={config_click}>Configure</a></li>
               </ul></li>
+              <li><a href="http://github.com/vzvenyach/legalmd">Source Code</a></li>
             </ul>
         </div>
       </div>
