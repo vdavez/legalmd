@@ -50,8 +50,9 @@ var Container = React.createClass({displayName: 'Container',
               React.DOM.li(null, React.DOM.a( {className:"dropdown-toggle", 'data-toggle':"dropdown"}, "Set YAML",React.DOM.span( {className:"caret"})),
               React.DOM.ul( {className:"dropdown-menu", role:"menu"}, 
               React.DOM.li(null, React.DOM.a( {onClick:custom_click}, "Customize")),
-              React.DOM.li(null, React.DOM.a( {onClick:config_click}, "Configure"))              
-              ))
+              React.DOM.li(null, React.DOM.a( {onClick:config_click}, "Configure"))
+              )),
+              React.DOM.li(null, React.DOM.a( {href:"http://github.com/vzvenyach/legalmd"}, "Source Code"))
             )
         )
       ),
