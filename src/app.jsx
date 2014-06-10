@@ -14,26 +14,143 @@ var Container = React.createClass({
           contents[2] = d.files["inbox.md"].content;
       })
     } else {
-       contents[0] = "name: Legal Markdown\ntest: hello?"
+       contents[0] = "name: Legal Markdown\n\nmustache: '[mustache powered-templating](http://mustache.github.io/)'"
        contents[1] = "levels: \n  - form: $x. \n    num: I \n  - form: $x. \n    num: A \n  - form: ($x) \n    num: 1"
-       contents[2] = "#{{name}}\n\nType some *markdown* here to try it out. Legal citations become links.\n\nSee, e.g., 35 USC 112 and D.C. Official Code 2-531.\n\nl. |xref| Make nested lists\nll. It's easy to do\nll. Just add a lowercase `l` and a period `.`\nlll. Or many\nlll. You can even use cross references. Try adding a level before |xref|\nlll. Let your imagination run wild.\nl. So, woohoo!"
+       contents[2] = "#Legal MarkdownJS\n\nType some *markdown* here to try it out. Legal citations become links.\n\nSee, e.g., 35 USC 112 and D.C. Official Code 2-531.\n\n##Levels\n\nl. |xref| Make nested lists\nll. It's easy to do\nll. Just add a lowercase `l` and a period `.`\nlll. Or many\nlll. You can even use cross references. Try adding a level before |xref|\nlll. Let your imagination run wild.\nl. So, woohoo!\n\n##Templating\n\nOh yeah. Did I mention that you can use {{mustache}}? To use it, try setting some customization variables using the dropdown menu above."
     }
     return {custom: contents[0], config: contents[1], inbox: contents[2]} 
   },
   handleChange: function (uploadedText) {
     (uploadedText.custom != undefined ? this.setState({custom: uploadedText.custom, config:this.state.config}) : this.setState({custom: this.state.custom, config:uploadedText.config}))
   },
+saveAnonGist: function () {
+    var yml = $.extend(YAML.parse(this.state.custom),YAML.parse(this.state.config))
+    var mustached = converter.makeHtml(leveler(Mustache.to_html(this.state.inbox, yml), yml.levels).out)
+    var gist = {
+      description: "legalmd-gist",
+      public: true,
+      files: {
+        "inbox.md": {
+            "content": this.state.inbox
+        },
+        "config.yaml": {
+            "content": this.state.config
+        },
+        "custom.yaml": {
+            "content": this.state.custom
+        },
+        "output.html": {
+            "content": mustached
+        }
+      }
+    };
+      $.ajax({
+        type: "post",
+        url:'https://api.github.com/gists',
+        data: JSON.stringify(gist),
+      }).done(function(data, status, xhr) {
+        // take new Gist id, make permalink
+        if (history && history.pushState)
+        history.pushState({id: data.id}, null, "#" + data.id);
+        console.log(data.id)
+        // mark what we last saved
+        console.log("Remaining this hour: " + xhr.getResponseHeader("X-RateLimit-Remaining"));
+      }).fail(function(xhr, status, errorThrown) {
+        console.log(xhr);
+        })
+    return false;
+  },
+  saveGist: function () {
+    var yml = $.extend(YAML.parse(this.state.custom),YAML.parse(this.state.config))
+    var mustached = converter.makeHtml(leveler(Mustache.to_html(this.state.inbox, yml), yml.levels).out)
+    var gist = {
+      description: "legalmd-gist",
+      public: true,
+      files: {
+        "inbox.md": {
+            "content": this.state.inbox
+        },
+        "config.yaml": {
+            "content": this.state.config
+        },
+        "custom.yaml": {
+            "content": this.state.custom
+        },
+        "output.html": {
+            "content": mustached
+        }
+      }
+    };
+
+    if (document.location.hash != "") {
+       OAuth.popup('github', function(err, result) {
+            if (err) {
+                console.log(err); // do something with error
+                return;
+            }
+            var gist_url = 'https://api.github.com/gists/' + document.location.hash.replace("#","")
+          result.patch({
+            url: gist_url,
+            contentType: "application/json",
+            data: JSON.stringify(gist),
+            }).fail(function (xhr, status, errorThrown) {
+              result.post({
+                url:gist_url + '/forks',
+                data: JSON.stringify(gist),
+              }).done(function(data, status, xhr) {
+        // take new Gist id, make permalink
+              if (history && history.pushState)
+                history.pushState({id: data.id}, null, "#" + data.id);
+                console.log(data.id)
+                // mark what we last saved
+                console.log("Remaining this hour: " + xhr.getResponseHeader("X-RateLimit-Remaining"));
+              }).fail(function(xhr, status, errorThrown) {
+            console.log(xhr);
+            })
+            result.patch({
+              url: 'https://api.github.com/gists/' + document.location.hash.replace("#",""),
+              contentType: "application/json",
+              data: JSON.stringify(gist),
+              })
+            })
+        })
+    }
+    else {
+    OAuth.popup('github', function(err, result) {
+            if (err) {
+                console.log(err); // do something with error
+                return;
+            }
+      console.log("Saving to a gist...");
+      result.post({
+        url:'https://api.github.com/gists',
+        data: JSON.stringify(gist),
+      }).done(function(data, status, xhr) {
+        // take new Gist id, make permalink
+        if (history && history.pushState)
+        history.pushState({id: data.id}, null, "#" + data.id);
+        console.log(data.id)
+        // mark what we last saved
+        console.log("Remaining this hour: " + xhr.getResponseHeader("X-RateLimit-Remaining"));
+      }).fail(function(xhr, status, errorThrown) {
+        console.log(xhr);
+        })
+      });
+    }
+    return false;
+  },
   render: function() {
     var about_click = (function () {$("#about-modal").modal("show")});
     var custom_click = (function () {$("#custom").modal("show")});
     var config_click = (function () {$("#config").modal("show")});
+    var titleStyle = {color: 'd9534f'};
     return (
       <div>
       <AboutModal />
       <CustomModal name="custom" data={this.state.custom} onChange={this.handleChange}/>
       <ConfigModal name="config" data={this.state.config} onChange={this.handleChange}/>
-      <nav className="navbar navbar-default navbar-static-top z-index > 1040" role="navigation">
-        <div className="container">
+      <nav className="navbar navbar-inverse navbar-default navbar-static-top z-index > 1040" role="navigation">
+        <div className="container-fluid">
           <div className="navbar-header">
             <button type="button" className="navbar-toggle" data-toggle="collapse" data-target="#lmd-navbar">
               <span className="sr-only">Toggle navigation</span>
@@ -41,31 +158,34 @@ var Container = React.createClass({
               <span className="icon-bar"></span>
               <span className="icon-bar"></span>
             </button>
-            <a className="navbar-brand" href="#">LegalMarkdownJS</a>
+            <a style={titleStyle} className="navbar-brand" href="#">LegalMarkdownJS</a>
           </div>
 
           <div className="collapse navbar-collapse" id="lmd-navbar">
             <ul className="nav navbar-nav">
-              <li><a onClick={about_click}>About</a></li>
-              <li><a className="dropdown-toggle" data-toggle="dropdown">Set YAML<span className="caret"></span></a>
+              <li><button className="dropdown-toggle btn btn-danger btn-lg" data-toggle="dropdown">Save<span className="caret"></span></button>
+              <ul className="dropdown-menu" role="menu">
+                <li><a id="btnExport" download="output.html">Download to File</a></li>
+                <li><a onClick={this.saveGist}>Save to Gist</a></li>
+                <li><a onClick={this.saveAnonGist}>Save to Anonymous Gist</a></li>
+              </ul>
+              </li>
+              <li><a className="dropdown-toggle" data-toggle="dropdown">Set Customization Variables<span className="caret"></span></a>
               <ul className="dropdown-menu" role="menu">
               <li><a onClick={custom_click}>Customize</a></li>
               <li><a onClick={config_click}>Configure</a></li>
               </ul></li>
-              <li><a href="http://github.com/vzvenyach/legalmd">Source Code</a></li>
+              <li><a onClick={about_click}>About</a></li>
+              <li><a href="http://github.com/vzvenyach/legalmd" target="blank">Source Code</a></li>
             </ul>
         </div>
       </div>
-      <div className="container">
-
+      </nav>
+      <div className="container-fluid">
         <div className="row clearfix">
-        	<h1>Legal Markdown Editor</h1>
-          <hr />
           <MarkdownFrame ref="myMDFrame" data={this.state} inbox={this.state.inbox}/>
         </div>
       </div>
-
-      </nav>
     </div>
     );
   }
@@ -196,8 +316,8 @@ var Inbox = React.createClass({
   render: function () {
     return (
       <div>
-      <div className="col-lg-6 column">
-          <h3>Input</h3>
+      <div className="col-md-6 column">
+          <h3>Type in Markdown and...</h3>
           <textarea className="inbox" id="inbox" ref="textarea_inbox" value={this.state.inbox} onChange={this.handleChange}/>
           <UploadButton name="inbox_upload" onUpload={this.getUploadText} />
       </div>
@@ -208,136 +328,13 @@ var Inbox = React.createClass({
 })
 
 var Outbox = React.createClass({
-    saveAnonGist: function () {
-    var yml = $.extend(YAML.parse(this.props.data.custom),YAML.parse(this.props.data.config))
-    var mustached = converter.makeHtml(leveler(Mustache.to_html(this.props.inbox.inbox, yml), yml.levels).out)
-    var gist = {
-      description: "legalmd-gist",
-      public: true,
-      files: {
-        "inbox.md": {
-            "content": this.props.inbox.inbox
-        },
-        "config.yaml": {
-            "content": this.props.data.config
-        },
-        "custom.yaml": {
-            "content": this.props.data.custom
-        },
-        "output.html": {
-            "content": mustached
-        }
-      }
-    };
-      $.ajax({
-        type: "post",
-        url:'https://api.github.com/gists',
-        data: JSON.stringify(gist),
-      }).done(function(data, status, xhr) {
-        // take new Gist id, make permalink
-        if (history && history.pushState)
-        history.pushState({id: data.id}, null, "#" + data.id);
-        console.log(data.id)
-        // mark what we last saved
-        console.log("Remaining this hour: " + xhr.getResponseHeader("X-RateLimit-Remaining"));
-      }).fail(function(xhr, status, errorThrown) {
-        console.log(xhr);
-        })
-    return false;
-  },
-  saveGist: function () {
-    var yml = $.extend(YAML.parse(this.props.data.custom),YAML.parse(this.props.data.config))
-    var mustached = converter.makeHtml(leveler(Mustache.to_html(this.props.inbox.inbox, yml), yml.levels).out)
-    var gist = {
-      description: "legalmd-gist",
-      public: true,
-      files: {
-        "inbox.md": {
-            "content": this.props.inbox.inbox
-        },
-        "config.yaml": {
-            "content": this.props.data.config
-        },
-        "custom.yaml": {
-            "content": this.props.data.custom
-        },
-        "output.html": {
-            "content": mustached
-        }
-      }
-    };
-
-    if (document.location.hash != "") {
-       OAuth.popup('github', function(err, result) {
-            if (err) {
-                console.log(err); // do something with error
-                return;
-            }
-            var gist_url = 'https://api.github.com/gists/' + document.location.hash.replace("#","")
-          result.patch({
-            url: gist_url,
-            contentType: "application/json",
-            data: JSON.stringify(gist),
-            }).fail(function (xhr, status, errorThrown) {
-              result.post({
-                url:gist_url + '/forks',
-                data: JSON.stringify(gist),
-              }).done(function(data, status, xhr) {
-        // take new Gist id, make permalink
-              if (history && history.pushState)
-                history.pushState({id: data.id}, null, "#" + data.id);
-                console.log(data.id)
-                // mark what we last saved
-                console.log("Remaining this hour: " + xhr.getResponseHeader("X-RateLimit-Remaining"));
-              }).fail(function(xhr, status, errorThrown) {
-            console.log(xhr);
-            })
-            result.patch({
-              url: 'https://api.github.com/gists/' + document.location.hash.replace("#",""),
-              contentType: "application/json",
-              data: JSON.stringify(gist),
-              })
-            })
-        })
-    }
-    else {
-    OAuth.popup('github', function(err, result) {
-            if (err) {
-                console.log(err); // do something with error
-                return;
-            }
-      console.log("Saving to a gist...");
-      result.post({
-        url:'https://api.github.com/gists',
-        data: JSON.stringify(gist),
-      }).done(function(data, status, xhr) {
-        // take new Gist id, make permalink
-        if (history && history.pushState)
-        history.pushState({id: data.id}, null, "#" + data.id);
-        console.log(data.id)
-        // mark what we last saved
-        console.log("Remaining this hour: " + xhr.getResponseHeader("X-RateLimit-Remaining"));
-      }).fail(function(xhr, status, errorThrown) {
-        console.log(xhr);
-        })
-      });
-    }
-    return false;
-  },
   render: function () {
     var yml = $.extend(YAML.parse(this.props.data.custom),YAML.parse(this.props.data.config))
     var mustached = converter.makeHtml(link2bills(leveler(Mustache.to_html(this.props.inbox.inbox, yml), yml.levels).out))
     return (
-      <div className="col-lg-6 column"> 
-        <h3>Output</h3>
+      <div className="col-md-6 column"> 
+        <h3>... get out beautifully rendered HTML</h3>
         <div className="content outbox" dangerouslySetInnerHTML={{__html: mustached}}/>
-        <div className="form-group">
-        <div className="btn-group center-block">
-          <button id="btnExport" download="output.html" className="btn btn-success btn-block btn-lg">Download to File</button>
-          <button className="btn btn-primary btn-block btn-lg" onClick={this.saveGist}>Save to User Gist</button>
-          <button className="btn btn-info btn-block btn-lg" onClick={this.saveAnonGist}>Save to Anonymous Gist</button>
-        </div>
-        </div>
       </div>
     )
   }
@@ -355,7 +352,7 @@ var UploadButton = React.createClass({
   render: function () {
     return (
       <form>
-        <input type="file" ref="btn" id={this.props.name} onChange={this.handleChange}/>
+        <input type="file" ref="btn" id={this.props.name} onChange={this.handleChange}>Upload a file to load into the textarea above</input>
       </form>
     )
   }

@@ -1,9 +1,10 @@
 .outbox{
     background-color: white;
-    padding:50px;
+    padding:5px;
     border: 1px solid black;
     font-family: "Fairplay", Georgia, "Times New Roman", Times, serif;
     font-size: 18px;
+    height: 80%
   }
 
 .bodystyle{
@@ -11,10 +12,14 @@
   background-color: #F8F8FF;
 }
 
+textarea {
+  font-size: 18px;
+}
+
 .inbox{
-  width:500px;
-  height:500px;
   background-color: white;
-  padding:10px;
-  border: 1px solid black;   
+  padding:5px;
+  border: 1px solid black;
+  width: 100%;
+  height: 80%
 }
