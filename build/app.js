@@ -16,9 +16,9 @@ var Container = React.createClass({displayName: 'Container',
     } else {
        contents[0] = "name: Legal Markdown\n\nmustache: '[mustache powered-templating](http://mustache.github.io/)'"
        contents[1] = "levels: \n  - form: $x. \n    num: I \n  - form: $x. \n    num: A \n  - form: ($x) \n    num: 1"
-       contents[2] = "#Legal MarkdownJS\n\nType some *markdown* here to try it out. Legal citations become links.\n\nSee, e.g., 35 USC 112 and D.C. Official Code 2-531.\n\n##Levels\n\nl. |xref| Make nested lists\nll. It's easy to do\nll. Just add a lowercase `l` and a period `.`\nlll. Or many\nlll. You can even use cross references. Try adding a level before |xref|\nlll. Let your imagination run wild.\nl. So, woohoo!\n\n##Templating\n\nOh yeah. Did I mention that you can use {{mustache}}? To use it, try setting some customization variables using the dropdown menu above."
+       contents[2] = "#Legal MarkdownJS\n\n---\n\n####This web-page lets non-programmers create `html` files (the stuff that webpages are built from) using a few simple commands.  The formatting conventions are from something called markdown . \n\nIt's much easier than a word processor program to do things like create numbered lists, links to legal citations, font-size changes, and other formats.  And you can **save** your document in many different forms by clicking the ` save ` button above.\n\nCheck out how the citations below become ` links ` to the references in the text to the right.  All I had to do was type in the citation.\n\nSee, e.g., 35 USC 112 and D.C. Official Code 2-531.\n\nWant to make a table of authorities in nothing flat?  Check this out:\n\n##Table of Authorities\n\nl. |xref| Jurisdiction\nl. Statement of Case\nl. Standard of Review \nl.Factual Background\nl.Legal Argument\nl. Conclusion.\nl. So, woohoo!\n\n##Templating\n\nOh yeah. Did I mention that you can use {{mustache}}? To use it, try setting some customization variables using the dropdown menu above."
     }
-    return {custom: contents[0], config: contents[1], inbox: contents[2]} 
+    return {custom: contents[0], config: contents[1], inbox: contents[2]}
   },
   handleChange: function (uploadedText) {
     (uploadedText.custom != undefined ? this.setState({custom: uploadedText.custom, config:this.state.config}) : this.setState({custom: this.state.custom, config:uploadedText.config}))
@@ -145,14 +145,14 @@ saveAnonGist: function () {
     var config_click = (function () {$("#config").modal("show")});
     var titleStyle = {color: 'd9534f'};
     return (
-      React.DOM.div(null, 
+      React.DOM.div(null,
       AboutModal(null ),
       CustomModal( {name:"custom", data:this.state.custom, onChange:this.handleChange}),
       ConfigModal( {name:"config", data:this.state.config, onChange:this.handleChange}),
-      React.DOM.nav( {className:"navbar navbar-inverse navbar-default navbar-static-top z-index > 1040", role:"navigation"}, 
-        React.DOM.div( {className:"container-fluid"}, 
-          React.DOM.div( {className:"navbar-header"}, 
-            React.DOM.button( {type:"button", className:"navbar-toggle", 'data-toggle':"collapse", 'data-target':"#lmd-navbar"}, 
+      React.DOM.nav( {className:"navbar navbar-inverse navbar-default navbar-static-top z-index > 1040", role:"navigation"},
+        React.DOM.div( {className:"container-fluid"},
+          React.DOM.div( {className:"navbar-header"},
+            React.DOM.button( {type:"button", className:"navbar-toggle", 'data-toggle':"collapse", 'data-target':"#lmd-navbar"},
               React.DOM.span( {className:"sr-only"}, "Toggle navigation"),
               React.DOM.span( {className:"icon-bar"}),
               React.DOM.span( {className:"icon-bar"}),
@@ -161,17 +161,17 @@ saveAnonGist: function () {
             React.DOM.a( {style:titleStyle, className:"navbar-brand", href:"#"}, "LegalMarkdownJS")
           ),
 
-          React.DOM.div( {className:"collapse navbar-collapse", id:"lmd-navbar"}, 
-            React.DOM.ul( {className:"nav navbar-nav"}, 
+          React.DOM.div( {className:"collapse navbar-collapse", id:"lmd-navbar"},
+            React.DOM.ul( {className:"nav navbar-nav"},
               React.DOM.li(null, React.DOM.button( {className:"dropdown-toggle btn btn-danger btn-lg", 'data-toggle':"dropdown"}, "Save",React.DOM.span( {className:"caret"})),
-              React.DOM.ul( {className:"dropdown-menu", role:"menu"}, 
+              React.DOM.ul( {className:"dropdown-menu", role:"menu"},
                 React.DOM.li(null, React.DOM.a( {id:"btnExport", download:"output.html"}, "Download to File")),
                 React.DOM.li(null, React.DOM.a( {onClick:this.saveGist}, "Save to Gist")),
                 React.DOM.li(null, React.DOM.a( {onClick:this.saveAnonGist}, "Save to Anonymous Gist"))
               )
               ),
               React.DOM.li(null, React.DOM.a( {className:"dropdown-toggle", 'data-toggle':"dropdown"}, "Set Customization Variables",React.DOM.span( {className:"caret"})),
-              React.DOM.ul( {className:"dropdown-menu", role:"menu"}, 
+              React.DOM.ul( {className:"dropdown-menu", role:"menu"},
               React.DOM.li(null, React.DOM.a( {onClick:custom_click}, "Customize")),
               React.DOM.li(null, React.DOM.a( {onClick:config_click}, "Configure"))
               )),
@@ -181,8 +181,8 @@ saveAnonGist: function () {
         )
       )
       ),
-      React.DOM.div( {className:"container-fluid"}, 
-        React.DOM.div( {className:"row clearfix"}, 
+      React.DOM.div( {className:"container-fluid"},
+        React.DOM.div( {className:"row clearfix"},
           MarkdownFrame( {ref:"myMDFrame", data:this.state, inbox:this.state.inbox})
         )
       )
@@ -205,20 +205,20 @@ var CustomModal = React.createClass({displayName: 'CustomModal',
   },
   render: function () {
     return (
-      React.DOM.div( {id:this.props.name, className:"modal fade"}, 
-        React.DOM.div( {className:"modal-dialog"}, 
-          React.DOM.div( {className:"modal-content"}, 
-            React.DOM.div( {className:"modal-header"}, 
+      React.DOM.div( {id:this.props.name, className:"modal fade"},
+        React.DOM.div( {className:"modal-dialog"},
+          React.DOM.div( {className:"modal-content"},
+            React.DOM.div( {className:"modal-header"},
               React.DOM.button( {type:"button", className:"close", 'data-dismiss':"modal", 'aria-hidden':"true"}, "x"),
               React.DOM.h4( {className:"modal-title"}, "Customize")
             ),
-          React.DOM.div( {className:"modal-body"}, 
-          React.DOM.form( {role:"form"}, 
+          React.DOM.div( {className:"modal-body"},
+          React.DOM.form( {role:"form"},
             React.DOM.textarea( {ref:"custom_yaml", value:this.state.custom, rows:"10", className:"form-control", onChange:this.handleChange}),
             UploadButton( {name:"custom_upload", onUpload:this.getUploadText} )
           )
           ),
-          React.DOM.div( {className:"modal-footer"}, 
+          React.DOM.div( {className:"modal-footer"},
             React.DOM.button( {type:"button", className:"btn btn-default", 'data-dismiss':"modal"}, "Close")
           )
         )
@@ -242,20 +242,20 @@ var ConfigModal = React.createClass({displayName: 'ConfigModal',
   },
   render: function () {
     return (
-      React.DOM.div( {id:this.props.name, className:"modal fade"}, 
-        React.DOM.div( {className:"modal-dialog"}, 
-          React.DOM.div( {className:"modal-content"}, 
-            React.DOM.div( {className:"modal-header"}, 
+      React.DOM.div( {id:this.props.name, className:"modal fade"},
+        React.DOM.div( {className:"modal-dialog"},
+          React.DOM.div( {className:"modal-content"},
+            React.DOM.div( {className:"modal-header"},
               React.DOM.button( {type:"button", className:"close", 'data-dismiss':"modal", 'aria-hidden':"true"}, "x"),
               React.DOM.h4( {className:"modal-title"}, "Configure")
             ),
-          React.DOM.div( {className:"modal-body"}, 
-          React.DOM.form( {role:"form"}, 
+          React.DOM.div( {className:"modal-body"},
+          React.DOM.form( {role:"form"},
             React.DOM.textarea( {ref:"yaml_box", value:this.state.config, rows:"10", className:"form-control", onChange:this.handleChange}),
             UploadButton( {name:"config_upload", onUpload:this.getUploadText} )
           )
           ),
-          React.DOM.div( {className:"modal-footer"}, 
+          React.DOM.div( {className:"modal-footer"},
             React.DOM.button( {type:"button", className:"btn btn-default", 'data-dismiss':"modal"}, "Close")
           )
         )
@@ -268,14 +268,14 @@ var ConfigModal = React.createClass({displayName: 'ConfigModal',
 var AboutModal = React.createClass({displayName: 'AboutModal',
   render: function () {
     return (
-      React.DOM.div( {id:"about-modal", className:"modal fade"}, 
-        React.DOM.div( {className:"modal-dialog"}, 
-          React.DOM.div( {className:"modal-content"}, 
-            React.DOM.div( {className:"modal-header"}, 
+      React.DOM.div( {id:"about-modal", className:"modal fade"},
+        React.DOM.div( {className:"modal-dialog"},
+          React.DOM.div( {className:"modal-content"},
+            React.DOM.div( {className:"modal-header"},
               React.DOM.button( {type:"button", className:"close", 'data-dismiss':"modal", 'aria-hidden':"true"}, "×"),
               React.DOM.h4( {className:"modal-title"}, "About LegalMarkdownJS")
             ),
-          React.DOM.div( {className:"modal-body"}, 
+          React.DOM.div( {className:"modal-body"},
             React.DOM.h3(null, "About"),
             React.DOM.p(null, "Inspired by the ruby gem built by @compleatang, I wanted to build a javascript port of Legal Markdown."),
             React.DOM.h3(null, "Contributing"),
@@ -283,7 +283,7 @@ var AboutModal = React.createClass({displayName: 'AboutModal',
             React.DOM.h3(null, "License"),
             React.DOM.p(null, "MIT")
           ),
-          React.DOM.div( {className:"modal-footer"}, 
+          React.DOM.div( {className:"modal-footer"},
             React.DOM.button( {type:"button", className:"btn btn-default", 'data-dismiss':"modal"}, "Close")
           )
         )
@@ -296,7 +296,7 @@ var AboutModal = React.createClass({displayName: 'AboutModal',
 var MarkdownFrame = React.createClass({displayName: 'MarkdownFrame',
   render: function () {
     return (
-      React.DOM.div( {className:"row"}, 
+      React.DOM.div( {className:"row"},
         Inbox( {ref:"myInbox", data:this.props.data, inbox:this.props.inbox} )
       )
     )
@@ -315,8 +315,8 @@ var Inbox = React.createClass({displayName: 'Inbox',
   },
   render: function () {
     return (
-      React.DOM.div(null, 
-      React.DOM.div( {className:"col-md-6 column"}, 
+      React.DOM.div(null,
+      React.DOM.div( {className:"col-md-6 column"},
           React.DOM.h3(null, "Type in Markdown and..."),
           React.DOM.textarea( {className:"inbox", id:"inbox", ref:"textarea_inbox", value:this.state.inbox, onChange:this.handleChange}),
           UploadButton( {name:"inbox_upload", onUpload:this.getUploadText} )
@@ -332,7 +332,7 @@ var Outbox = React.createClass({displayName: 'Outbox',
     var yml = $.extend(YAML.parse(this.props.data.custom),YAML.parse(this.props.data.config))
     var mustached = converter.makeHtml(link2bills(leveler(Mustache.to_html(this.props.inbox.inbox, yml), yml.levels).out))
     return (
-      React.DOM.div( {className:"col-md-6 column"},  
+      React.DOM.div( {className:"col-md-6 column"},
         React.DOM.h3(null, "... get out beautifully rendered HTML"),
         React.DOM.div( {className:"content outbox", dangerouslySetInnerHTML:{__html: mustached}})
       )
@@ -351,7 +351,7 @@ var UploadButton = React.createClass({displayName: 'UploadButton',
   },
   render: function () {
     return (
-      React.DOM.form(null, 
+      React.DOM.form(null,
         React.DOM.input( {type:"file", ref:"btn", id:this.props.name, onChange:this.handleChange}, "Upload a file to load into the textarea above")
       )
     )
