@@ -21,7 +21,10 @@ var Container = React.createClass({displayName: 'Container',
     return {custom: contents[0], config: contents[1], inbox: contents[2]} 
   },
   handleChange: function (uploadedText) {
-    (uploadedText.custom != undefined ? this.setState({custom: uploadedText.custom, config:this.state.config}) : this.setState({custom: this.state.custom, config:uploadedText.config}))
+    (uploadedText.custom != undefined ? this.setState({custom: uploadedText.custom, config:this.state.config, inbox:this.state.inbox}) : this.setState({custom: this.state.custom, config:uploadedText.config, inbox:this.state.inbox}))
+  },
+  textChange: function (inboxText) {
+    this.setState({custom: this.state.custom, config: this.state.config, inbox: inboxText.inbox})
   },
 saveAnonGist: function () {
     var yml = $.extend(YAML.parse(this.state.custom),YAML.parse(this.state.config))
@@ -183,7 +186,7 @@ saveAnonGist: function () {
       ),
       React.DOM.div( {className:"container-fluid"}, 
         React.DOM.div( {className:"row clearfix"}, 
-          MarkdownFrame( {ref:"myMDFrame", data:this.state, inbox:this.state.inbox})
+          Inbox( {ref:"myMDFrame", data:this.state, inbox:this.state.inbox, onChange:this.textChange})
         )
       )
     )
@@ -293,16 +296,6 @@ var AboutModal = React.createClass({displayName: 'AboutModal',
   }
 })
 
-var MarkdownFrame = React.createClass({displayName: 'MarkdownFrame',
-  render: function () {
-    return (
-      React.DOM.div( {className:"row"}, 
-        Inbox( {ref:"myInbox", data:this.props.data, inbox:this.props.inbox} )
-      )
-    )
-  }
-})
-
 var Inbox = React.createClass({displayName: 'Inbox',
   getInitialState: function () {
     return {inbox: this.props.inbox}
@@ -312,9 +305,11 @@ var Inbox = React.createClass({displayName: 'Inbox',
   },
   handleChange: function() {
     this.setState({inbox: this.refs.textarea_inbox.getDOMNode().value});
+    this.props.onChange(this.state)
   },
   render: function () {
     return (
+      React.DOM.div( {className:"row"}, 
       React.DOM.div(null, 
       React.DOM.div( {className:"col-md-6 column"}, 
           React.DOM.h3(null, "Type in Markdown and..."),
@@ -322,6 +317,7 @@ var Inbox = React.createClass({displayName: 'Inbox',
           UploadButton( {name:"inbox_upload", onUpload:this.getUploadText} )
       ),
         Outbox( {ref:"myOutBox", data:this.props.data, inbox:this.state} )
+      )
       )
     )
   }
