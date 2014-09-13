@@ -355,6 +355,14 @@ var UploadButton = React.createClass({displayName: 'UploadButton',
 })
 
 
+function makePermafrastUrl(citation) {
+  var permafrast = citation.reporter;
+  var volume = permafrast.volume;
+  var reporter = permafrast.reporter;
+  var page = permafrast.page;
+  return "http://permafrast.herokuapp.com/" + volume + "/" + reporter + "/" + page + "/redirect";
+}
+
 function makeUsCodeUrl(citation) {
   var usc = citation.usc;
   var title = usc.title;
@@ -376,17 +384,11 @@ function makeDcCodeUrl(citation) {
   return "http://dccode.org/simple/sections/" + title + "-" + section + ".html";
 }
 
-function makeJudicialUrl(citation) {
-  console.log("judicialing");
-  // nice 'n easy
-  return "https://casetext.com/search#!/?q=" + citation.match;
-}
-
 function makeUrl(citation) {
   if (citation.type === "usc") { return makeUsCodeUrl(citation); }
   if (citation.type === "cfr") { return makeCfrUrl(citation); }
   if (citation.type === "dc_code") { return makeDcCodeUrl(citation); }
-  if (citation.type === "judicial") { return makeJudicialUrl(citation); }
+  if (citation.type === "reporter") { return makePermafrastUrl(citation); }
 
   // if no match, silently default to the plain text
   return citation.match;

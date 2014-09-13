@@ -1,1 +1,326 @@
-!function t(e,n,s){function i(o,c){if(!n[o]){if(!e[o]){var u="function"==typeof require&&require;if(!c&&u)return u(o,!0);if(r)return r(o,!0);throw new Error("Cannot find module '"+o+"'")}var a=n[o]={exports:{}};e[o][0].call(a.exports,function(t){var n=e[o][1][t];return i(n?n:t)},a,a.exports,t,e,n,s)}return n[o].exports}for(var r="function"==typeof require&&require,o=0;o<s.length;o++)i(s[o]);return i}({1:[function(t,e){e.exports={type:"regex",standardize:function(t){var e=t.section||t.part;return{id:["cfr",t.title,e].concat(t.subsections||[]).join("/")}},patterns:[{regex:"(\\d+)\\s?C\\.?\\s?F\\.?\\s?R\\.?(?:[\\s,]+(?:§+|parts?))?\\s*((?:\\d+\\.?\\d*(?:\\s*\\((?:[a-zA-Z\\d]{1,2}|[ixvIXV]+)\\))*)+)",fields:["title","sections"],processor:function(t){var e,n,s,i=t.title,r=t.sections.split(/[\(\)]+/).filter(function(t){return t});return n=r[0].trim(),s=r.splice(1),n.indexOf(".")>0?e=n.split(".")[0]:(e=n,n=null,s=null),{title:i,part:e,section:n,subsections:s}}}]}},{}],2:[function(t,e){e.exports={type:"regex",standardize:function(t){return{id:["dc-code",t.title,t.section].concat(t.subsections).join("/"),section_id:["dc-code",t.title,t.section].join("/")}},parents_by:"subsections",patterns:function(t){return"dc_code"==t.source?[{regex:"(?:section(?:s)?|§+)\\s+(\\d+A?)\\s?\\-\\s?([\\w\\d]+(?:\\.?[\\w\\d]+)?)((?:\\([^\\)]+\\))*)",fields:["title","section","subsections"],processor:function(t){var e=t.title,n=t.section,s=[];return t.subsections&&(s=t.subsections.split(/[\(\)]+/).filter(function(t){return t})),{title:e,section:n,subsections:s}}}]:[{regex:"D\\.?C\\.? Official Code\\s+(?:§+\\s+)?(\\d+A?)\\s?\\-\\s?([\\w\\d]+(?:\\.?[\\w\\d]+)?)((?:\\([^\\)]+\\))*)",fields:["title","section","subsections"],processor:function(t){var e=t.title,n=t.section,s=[];return t.subsections&&(s=t.subsections.split(/[\(\)]+/).filter(function(t){return t})),{title:e,section:n,subsections:s}}}]}}},{}],3:[function(t,e){e.exports={type:"regex",standardize:function(t){return{id:["dc-law",t.period,t.number].join("/")}},patterns:function(t){var e="";return"dc_code"!=t.source&&(e="D\\.?\\s*C\\.?\\s+"),[{regex:e+"Law\\s+(\\d+)\\s?[-–]+\\s?(\\d+\\w?)",fields:["period","number"],processor:function(t){return{period:t.period,number:t.number}}}]}}},{}],4:[function(t,e){e.exports={type:"regex",standardize:function(t){return{id:["dc-register",t.volume,t.page].join("/")}},patterns:[{regex:"(\\d+)\\s+DCR\\s+(\\d+)",fields:["volume","page"],processor:function(t){return{volume:t.volume,page:t.page}}}]}},{}],5:[function(t,e){e.exports={type:"regex",standardize:function(t){return{id:["us-law",t.type,t.congress,t.number].concat(t.sections||[]).join("/"),law_id:["us-law",t.type,t.congress,t.number].join("/")}},parents_by:"sections",patterns:[{regex:"(?:section (\\d+[\\w\\d-]*)((?:\\([^\\)]+\\))*) of )?(pub(?:lic)?|priv(?:ate)?)\\.?\\s*l(?:aw)?\\.?(?:\\s*No\\.?)? +(\\d+)[-–]+(\\d+)",fields:["section","subsections","type","congress","number"],processor:function(t){var e=[];return t.section&&e.push(t.section),t.subsections&&(e=e.concat(t.subsections.split(/[\(\)]+/).filter(function(t){return t}))),{type:t.type.match(/^priv/i)?"private":"public",congress:t.congress,number:t.number,sections:e}}},{regex:"(?:section (\\d+[\\w\\d-]*)((?:\\([^\\)]+\\))*) of )?P\\.?L\\.? +(\\d+)[-–](\\d+)",fields:["section","subsections","congress","number"],processor:function(t){return sections=[],t.section&&sections.push(t.section),t.subsections&&(sections=sections.concat(t.subsections.split(/[\(\)]+/).filter(function(t){return t}))),{type:"public",congress:t.congress,number:t.number,sections:sections}}}]}},{}],6:[function(t,e){e.exports={type:"regex",standardize:function(t){return{id:["stat",t.volume,t.page].join("/")}},patterns:[{regex:"(\\d+[\\w]*)\\s+Stat\\.?\\s+(\\d+)",fields:["volume","page"],processor:function(t){return{volume:t.volume,page:t.page}}}]}},{}],7:[function(t,e){e.exports={type:"regex",standardize:function(t){return{id:["usc",t.title,t.section].concat(t.subsections||[]).join("/"),section_id:["usc",t.title,t.section].join("/")}},parents_by:"subsections",patterns:[{regex:"(\\d+)\\s+U\\.?\\s?S\\.?\\s?C\\.?(?:\\s+(App).?)?(?:\\s+(§+))?\\s+((?:\\-*\\d+[\\w\\d\\-]*(?:\\([^\\)]+\\))*)+)(?:\\s+(note|et\\s+seq))?",fields:["title","appendix","symbol","sections","note"],processor:function(t){var e=t.title;t.appendix&&(e+="-app");var n=t.sections.split(/-+/),s=!1;if("§§"==t.symbol)s=!0;else{var i=t.sections.indexOf("-"),r=t.sections.indexOf("(");i>0&&r>0&&i>r&&(s=!0)}return n.length>1&&!s&&n.unshift(t.sections),n.map(function(n){var s=n.split(/[\(\)]+/).filter(function(t){return t});return n=s[0],subsections=s.splice(1),t.note&&subsections.push(t.note.replace(" ","-")),{title:e,section:n,subsections:subsections}})}},{regex:"section (\\d+[\\w\\d-]*)((?:\\([^\\)]+\\))*)(?:\\s+of|\\,) title (\\d+)",fields:["section","subsections","title"],processor:function(t){return{title:t.title,section:t.section,subsections:t.subsections.split(/[\(\)]+/).filter(function(t){return t})}}}]}},{}],8:[function(t,e){e.exports={type:"regex",standardize:function(t){return{id:["va-code",t.title,t.section].join("/")}},patterns:[{regex:"Va\\.? Code\\.?(?:\\s+Ann\\.?)?(?:\\s+§+)?\\s+([\\d\\.]+)\\-([\\d\\.:]+)(?:\\s+\\((?:West )?([12]\\d{3})\\))?",fields:["title","section","year"],processor:function(t){return{title:t.title,section:t.section,year:t.year}}}]}},{}],9:[function(t,e){e.exports=function(e){return e={types:{},filters:{},find:function(t,n){n||(n={});var s;return s=n.filter&&e.filters[n.filter]?e.filtered(n.filter,t,n):e.extract(t,n)},filtered:function(t,n,s){var i=[],r=e.filters[t];return r.from(n,s[t],function(t,n){var r=e.extract(t,s),o=r.citations.map(function(t){return Object.keys(n).forEach(function(e){t[e]=n[e]}),t});i=i.concat(o)}),{citations:i}},extract:function(t,n){n||(n={});var s=n.excerpt?parseInt(n.excerpt,10):0,i=n.parents||!1,r=e.selectedTypes(n);if(0===r.length)return null;var o=n.context||{},c=n.replace,u=[],a={},p=0;r.forEach(function(t){if("regex"==e.types[t].type){var n=e.types[t].patterns;"function"==typeof n&&(n=n(o[t]||{})),n.forEach(function(e){e.type=t,a[p]=e,p+=e.fields.length+1})}});var f=Object.keys(a).map(function(t){return a[t].regex});if(f.length>0)var l=new RegExp("("+f.join(")|(")+")","ig"),d=t.replace(l,function(){var n,r=arguments[0],o=arguments[arguments.length-2],p=Array.prototype.slice.call(arguments,1,-2);for(n=0;n<p.length&&!p[n];n++);var f=a[n];if(!f)return null;var l=f.type,d=Array.prototype.slice.call(p,n+1),y=e.matchFor(d,f),g=f.processor(y);Array.isArray(g)||(g=[g]);var x={type:f.type};if(x.match=r.toString(),c||(x.index=o),s>0){var b=o-s,v=b>0?b:0,m=o+x.match.length+s,h=m<=t.length?m:t.length;x.excerpt=t.substring(v,h)}i&&e.types[l].parents_by&&(g=e.u.flatten(g.map(function(t){return e.citeParents(t,l)}))),g=g.map(function(t){var n={};return e.u.extend(n,x),n[l]=t,e.u.extend(n[l],e.types[l].standardize(n[l])),u.push(n),n});var w;return"function"==typeof c?w=c(g[0]):"object"==typeof c&&"function"==typeof c[l]&&(w=c[l](g[0])),w?w:x.match});-1!=r.indexOf("judicial")&&(u=u.concat(e.types.judicial.extract(t)));var y={citations:u};return n.replace&&(y.text=d),y},citeParents:function(t,n){for(var s=e.types[n].parents_by,i=[],r=t[s].length;r>=0;r--){var o=e.u.extend({},t);o[s]=o[s].slice(0,r),i.push(o)}return i},matchFor:function(t,e){for(var n={},s=0;s<t.length;s++)n[e.fields[s]]=t[s];return n},selectedTypes:function(t){var n;return t.types&&(Array.isArray(t.types)?t.types.length>0&&(n=t.types):n=[t.types]),n=n?n.filter(function(t){return-1!=Object.keys(e.types).indexOf(t)}):Object.keys(e.types)},u:{extend:function(t){return Array.prototype.slice.call(arguments,1).forEach(function(e){if(e)for(var n in e)t[n]=e[n]}),t},flatten:function(t){var e=function(t,n){return t.forEach(function(t){Array.isArray(t)?e(t,n):n.push(t)}),n};return e(t,[])}},use:function(n){e.types[n]=t("./citations/"+n)}},"undefined"!=typeof t&&(e.types.usc=t("./citations/usc"),e.types.law=t("./citations/law"),e.types.cfr=t("./citations/cfr"),e.types.va_code=t("./citations/va_code"),e.types.dc_code=t("./citations/dc_code"),e.types.dc_register=t("./citations/dc_register"),e.types.dc_law=t("./citations/dc_law"),e.types.stat=t("./citations/stat"),e.filters.lines=t("./filters/lines")),"undefined"!=typeof window&&(window.Citation=e),e}()},{"./citations/cfr":1,"./citations/dc_code":2,"./citations/dc_law":3,"./citations/dc_register":4,"./citations/law":5,"./citations/stat":6,"./citations/usc":7,"./citations/va_code":8,"./filters/lines":10}],10:[function(t,e){e.exports={from:function(t,e,n){var s=e&&e.delimiter||/[\n\r]+/,i=t.split(new RegExp(s));i.forEach(function(t,e){n(t,{line:e+1})})}}},{}]},{},[9]);
+/* Citation.js - a legal citation extractor.
+ *
+ * Open source, dedicated to the public domain: https://github.com/unitedstates/citation
+ *
+ * Originally authored by Eric Mill (@konklone), at the Sunlight Foundation,
+ * many contributions by https://github.com/unitedstates/citation/graphs/contributors
+ */
+
+
+module.exports = (function(Citation) {
+
+Citation = {
+
+  // will be filled in by individual citation types as available
+  types: {},
+
+  // filters that can pre-process text and post-process citations
+  filters: {},
+
+  // TODO: document this inline
+  // check a block of text for citations of a given type -
+  // return an array of matches, with citation broken out into fields
+  find: function(text, options) {
+    if (!options) options = {};
+    if (typeof(text) !== "string") return;
+
+    // client can apply a filter that pre-processes text before extraction,
+    // and post-processes citations after extraction
+    var results;
+    if (options.filter && Citation.filters[options.filter])
+      return Citation.filtered(options.filter, text, options);
+
+    // otherwise, do a single pass over the whole text.
+    else
+      return Citation.extract(text, options);
+  },
+
+  // return an array of matched and filter-mapped cites
+  filtered: function(name, text, options) {
+    var results = [];
+
+    var filter = Citation.filters[name];
+
+    // filter can break up the text into pieces with accompanying metadata
+    filter.from(text, options[name], function(piece, metadata) {
+      var response = Citation.extract(piece, options);
+
+      // ignores any replaced text, it falls off the edge of the earth
+
+      var filtered = response.citations.map(function(result) {
+
+        Object.keys(metadata).forEach(function(key) {
+          result[key] = metadata[key];
+        });
+
+        return result;
+      });
+
+      results = results.concat(filtered);
+    });
+
+    // doesn't return replaced text
+    return {citations: results};
+  },
+
+
+  // run the citators over the text, return an array of matched cites
+  extract: function(text, options) {
+    if (!options) options = {};
+
+    // default: no excerpt
+    var excerpt = options.excerpt ? parseInt(options.excerpt, 10) : 0;
+
+    // whether to return parent citations
+    // default: false
+    var parents = options.parents || false;
+
+    // default: all types, can be filtered to one, or an array of them
+    var types = Citation.selectedTypes(options);
+    if (types.length === 0) return null;
+
+
+    // The caller can provide a replace callback to alter every found citation.
+    // this function will be called with each (found and processed) cite object,
+    // and should return a string to be put in the cite's place.
+    //
+    // The resulting transformed string will be in the returned object as a 'text' field.
+    // this field will only be present if a replace callback was provided.
+    //
+    // providing this callback will also cause matched cites not to return the 'index' field,
+    // as the replace process will completely screw them up. only use the 'index' field if you
+    // plan on doing your own replacing.
+    var replace = options.replace;
+
+    // accumulate the results
+    var results = [];
+
+
+    // will hold the calculated context-specific patterns we are to run
+    // over the given text, tracked by index we expect to find them at.
+    // nextIndex tracks a running index as we loop through patterns.
+    // (citators could just be called indexedPatterns)
+    var citators = {};
+    var nextIndex = 0;
+
+    // Go through every regex-based citator and prepare a set of patterns,
+    // indexed by the order of a matched arguments array.
+    types.forEach(function(type) {
+      if (Citation.types[type].type != "regex") return;
+
+      // Calculate the patterns this citator will contribute to the parse.
+      // (individual parsers can opt to make their parsing context-specific)
+      var patterns = Citation.types[type].patterns;
+      if (typeof(patterns) == "function")
+        patterns = patterns(options[type] || {});
+
+      // add each pattern, keeping a running tally of what we would
+      // expect its primary index to be when found in the master regex.
+      patterns.forEach(function(pattern) {
+        pattern.type = type; // will be needed later
+        citators[nextIndex] = pattern;
+        nextIndex += pattern.fields.length + 1;
+      });
+    });
+
+    // If there are any regex-based patterns being applied, combine them
+    // and run a find/replace over the string.
+    var regexes = Object.keys(citators).map(function(key) {return citators[key].regex});
+    if (regexes.length > 0) {
+
+      // merge all regexes into one, so that each pattern will begin at a predictable place
+      var regex = new RegExp("(" + regexes.join(")|(") + ")", "ig");
+
+      var replaced = text.replace(regex, function() {
+        var match = arguments[0];
+
+        // offset is second-to-last argument
+        var index = arguments[arguments.length - 2];
+
+        // pull out just the regex-captured matches
+        var captures = Array.prototype.slice.call(arguments, 1, -2);
+
+        // find the first matched index in the captures
+        var matchIndex;
+        for (matchIndex=0; matchIndex<captures.length; matchIndex++)
+          if (captures[matchIndex]) break;
+
+        // look up the citator by the index we expected it at
+        var citator = citators[matchIndex];
+        if (!citator) return null; // what?
+        var type = citator.type;
+
+        // process the matched data into the final object
+        var ourCaptures = Array.prototype.slice.call(captures, matchIndex + 1);
+        var namedMatch = Citation.matchFor(ourCaptures, citator);
+        var cites = citator.processor(namedMatch);
+
+        // one match can generate one or many citation results (e.g. ranges)
+        if (!Array.isArray(cites)) cites = [cites];
+
+        // put together the match-level information
+        var matchInfo = {type: citator.type};
+        matchInfo.match = match.toString(); // match data can be converted to the plain string
+
+        // store the matched character offset, except if we're replacing
+        if (!replace)
+          matchInfo.index = index;
+
+
+        // use index to grab surrounding excerpt
+        if (excerpt > 0) {
+          var proposedLeft = index - excerpt;
+          var left = proposedLeft > 0 ? proposedLeft : 0;
+
+          var proposedRight = index + matchInfo.match.length + excerpt;
+          var right = (proposedRight <= text.length) ? proposedRight : text.length;
+
+          matchInfo.excerpt = text.substring(left, right);
+        }
+
+
+        // if we want parent cites too, make those now
+        if (parents && Citation.types[type].parents_by) {
+          cites = Citation._.flatten(cites.map(function(cite) {
+            return Citation.citeParents(cite, type);
+          }));
+        }
+
+        cites = cites.map(function(cite) {
+          var result = {};
+
+          // match-level info
+          Citation._.extend(result, matchInfo);
+
+          // cite-level info, plus ID standardization
+          result[type] = cite;
+          result[type].id = Citation.types[type].id(cite);
+
+          results.push(result);
+
+          return result;
+        });
+
+        // I don't know what to do about ranges yet - but for now, screw it
+        var replacedCite;
+        if (typeof(replace) === "function")
+          replacedCite = replace(cites[0]);
+        else if ((typeof(replace) === "object") && (typeof(replace[type]) === "function"))
+          replacedCite = replace[type](cites[0]);
+
+        if (replacedCite)
+          return replacedCite;
+        else
+          return matchInfo.match;
+      });
+    }
+
+    // TODO: do for any external cite types, not just "judicial"
+    if (types.indexOf("judicial") != -1)
+      results = results.concat(Citation.types.judicial.extract(text));
+
+    var response = {citations: results};
+    if (options.replace) response.text = replaced;
+
+    return response;
+  },
+
+
+  // for a given set of cite-specific details,
+  // return itself and its parent citations
+  citeParents: function(citation, type) {
+    var field = Citation.types[type].parents_by;
+    var results = [];
+
+    for (var i=citation[field].length; i >= 0; i--) {
+      var parent = Citation._.extend({}, citation);
+      parent[field] = parent[field].slice(0, i);
+      results.push(parent);
+    }
+    return results;
+  },
+
+  // given an array of captures *beginning* with values the pattern
+  // knows how to process, turn it into an object with those keys.
+  matchFor: function(captures, pattern) {
+    var match = {};
+    for (var i=0; i<captures.length; i++)
+      match[pattern.fields[i]] = captures[i];
+    return match;
+  },
+
+  selectedTypes: function(options) {
+    var types;
+    if (options.types) {
+      if (Array.isArray(options.types)) {
+        if (options.types.length > 0)
+          types = options.types;
+      } else
+        types = [options.types];
+    }
+
+    // only allow valid types
+    if (types) {
+      types = types.filter(function(type) {
+        return Object.keys(Citation.types).indexOf(type) != -1;
+      });
+    } else
+      types = Object.keys(Citation.types);
+
+    return types;
+  },
+
+  // small replacement for several functions previously served by
+  // the `underscore` library.
+  _: {
+    extend: function(obj) {
+      Array.prototype.slice.call(arguments, 1).forEach(function(source) {
+        if (source) {
+          for (var prop in source)
+            obj[prop] = source[prop];
+        }
+      });
+      return obj;
+    },
+
+    flatten: function(array) {
+      var impl = function(input, output) {
+        input.forEach(function(value) {
+          if (Array.isArray(value))
+            impl(value, output);
+          else
+            output.push(value);
+        });
+        return output;
+      }
+
+      return impl(array, []);
+    }
+  }
+
+};
+
+
+// TODO: load only the citation types asked for
+if (typeof(require) !== "undefined") {
+  Citation.types.usc = require("./citations/usc");
+  Citation.types.law = require("./citations/law");
+  Citation.types.cfr = require("./citations/cfr");
+  Citation.types.va_code = require("./citations/va_code");
+  Citation.types.dc_code = require("./citations/dc_code");
+  Citation.types.dc_register = require("./citations/dc_register");
+  Citation.types.dc_law = require("./citations/dc_law");
+  Citation.types.stat = require("./citations/stat");
+  Citation.types.reporter = require("./citations/reporter");
+
+
+  Citation.filters.lines = require("./filters/lines");
+}
+
+// auto-load in-browser
+if (typeof(window) !== "undefined")
+  window.Citation = Citation;
+
+return Citation;
+
+})();
